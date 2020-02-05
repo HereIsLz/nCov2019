@@ -6,6 +6,7 @@ const Theme = {
   baseAccentColor: 'white',
   secureAccentColor: '#1565c0',
 
+  accentColor: '#881719',
   sumAccentColor: '#e64a19',
   deadAccentColor: '#4a148c',
   curedAccentColor: '#43a047',
@@ -34,7 +35,10 @@ const projection = d3.geoMercator()
   .translate([1000, 380])
 const pathMap = d3.geoPath().projection(projection);
 const layer1 = d3.select('#layer1')
-
+const layer2 = d3.select('#layer2')
+function DateToConsultString(dt) {
+  return (dt.getMonth() + 1) + "月" + dt.getDate() + "日"
+}
 function fetchData() {
   d3.json('https://tanshaocong.github.io/2019-nCoV/nameDict.json')
     .then(
@@ -186,7 +190,20 @@ function fetchData() {
               return files
             }
           ).then(
-            updateMapColor()
+            function () {
+              updateMapColor();
+              const startDate = new Date(2020, 0, 10);
+              const endDate = new Date(2020, (new Date()).getMonth(), (new Date()).getDate())
+
+              var tmpDate = startDate;
+
+              while (tmpDate.getTime() < endDate.getTime()) {
+                getDataPrepared(DateToConsultString(tmpDate));
+                tmpDate = new Date(tmpDate.getTime() + 86400000);
+              }
+            }
+          ).then(
+            console.log("Async Work Done.")
           )
         })
       })
@@ -222,12 +239,33 @@ function renderGeoPath(json) {
     .attr('stroke', Theme.backgroundColor)
     .attr('stroke-width', Theme.mapBaselineWidth)
     .classed('provID-' + json.provId, true)
+  layer2
+    .selectAll('.borders')
+    .data(json.features)
+    .enter()
+    .append('path')
+    .attr('id', d => 'borderID-' + d.properties.id)
+    .attr('d', pathMap)
+    .attr('fill', 'transparent')
+    .attr('opacity', 0)
+    .attr('stroke', Theme.accentColor)
+    .attr('stroke-width', 1.4)
+}
+
+function getValueInterface(cityName, selectedDate, selectedKey) {
+  var dataInCorrespondingDate = Dataset.dataByDate.filter((d) => {
+    return d.key == selectedDate;
+  })
+  if (dataInCorrespondingDate.length == 0) return 0;
+  var dt = dataInCorrespondingDate[0].values.filter((c) => {
+    return c.key == cityName;
+  })
+  if (dt.length == 0) return 0;
+  return dt[0].value[selectedKey];
 }
 
 
-
-
-function getValueInterface(cityName, selectedDate, selectedKey) {
+function getValueAccInterface(cityName, selectedDate, selectedKey) {
   var dataInCorrespondingDate = Dataset.dataAccByDate.filter((d) => {
     return d.key == selectedDate;
   })
@@ -259,9 +297,9 @@ function updateMapColor(selectedKey = "sum", selectedDate = defaultDate, statist
   jsonSet.forEach(json => {
     json.features.forEach(cityJson => {
 
-      let val = getValueInterface(cityJson.properties.name,
+      let val = getValueAccInterface(cityJson.properties.name,
         selectedDate, selectedKey)
-      let sumVal = getValueInterface(cityJson.properties.name,
+      let sumVal = getValueAccInterface(cityJson.properties.name,
         selectedDate, "sum")
       updateCityPathColor(
         cityJson.properties.id,
@@ -291,4 +329,103 @@ function recolorMap(k) {
       updateMapColor('cured');
       return;
   }
+}
+
+var DataRecords = [];
+
+function getDataPrepared(selectedDate) {
+  var DataRecordForDate = {
+    DateKey: selectedDate,
+    records: []
+  }
+  jsonSet.forEach(json => {
+    json.features.forEach(cityJson => {
+      DataRecordForDate.records.push({
+        key: +cityJson.properties.id,
+        name: cityJson.properties.name,
+        provName: json_provinces_provinceName[json.provId],
+        Confirmed: getValueInterface(cityJson.properties.name, selectedDate, "sum"),
+        Confirmed_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "sum"),
+        Dead: getValueInterface(cityJson.properties.name, selectedDate, "dead"),
+        Dead_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "dead"),
+        Cured: getValueInterface(cityJson.properties.name, selectedDate, "cured"),
+        Cured_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "cured"),
+      })
+    })
+  })
+  DataRecords.push(DataRecordForDate)
+}
+
+function fetchDataViewModel(sKey, sDate, sMode) {
+  recolorMap(sKey)
+  //console.log("hello", sKey, DateToConsultString(sDate), sMode, DataRecords);
+  let targetDataSet = DataRecords.filter(e => e.DateKey == DateToConsultString(sDate))
+  if (targetDataSet.length == 0) return [];
+
+  let retDataSet = [];
+
+  switch (sMode) {
+    case 'AccumulatedValue':
+      targetDataSet[0].records.forEach((e) => {
+        retDataSet.push({
+          key: e.key,
+          value: e[sKey + '_Acc'],
+          cityName: e.name,
+          provName: e.provName
+        })
+      })
+      //console.log(retDataSet)
+      break;
+    case 'OriginalValue':
+      targetDataSet[0].records.forEach((e) => {
+        retDataSet.push({
+          key: e.key,
+          value: e[sKey],
+          cityName: e.name,
+          provName: e.provName
+        })
+      })
+      break;
+    case 'ByArea':
+      break;
+    case 'ByPopolation':
+      break;
+    case 'ByConfirmed':
+      targetDataSet[0].records.forEach((e) => {
+        var tmpVal = e[sKey + '_Acc']
+        retDataSet.push({
+          key: e.key,
+          value: e['Confirmed_Acc'] == 0 ? -1 : (tmpVal / e['Confirmed_Acc']).toFixed(3),
+          cityName: e.name,
+          provName: e.provName
+        })
+      })
+      break;
+  }
+  console.log(retDataSet);
+  return retDataSet.sort((a, b) => {
+    return b.value - a.value;
+  });
+}
+
+function recolorCityBorder(e) {
+
+}
+
+var ExemptedKey = [];
+function HighlightCity(e) {
+  ExemptedKey.forEach((t) => {
+    d3.selectAll("#borderID-" + t)
+      .attr('opacity', 0)
+  })
+  ExemptedKey = [];
+  for (var ek in e._exemptedIndices) {
+    ExemptedKey.push(
+      e._items[ek].key);
+  }
+  ExemptedKey.forEach((t) => {
+    d3.selectAll("#borderID-" + t)
+      .attr('opacity', 1)
+  })
+  return ExemptedKey;
 }
