@@ -1,3 +1,4 @@
+
 const __DEBUG = false;
 const defaultDate = "2月4日"
 
@@ -11,14 +12,42 @@ const Theme = {
   deadAccentColor: '#4a148c',
   curedAccentColor: '#43a047',
 
+  ConfirmedColor: '#e64a19',
+  DeadColor: '#4a148c',
+  CuredColor: '#43a047',
+
   sumMaxValue: 5000,
   deadMaxValue: 400,
   curedMaxValue: 400,
 
   mapBaselineWidth: 0.5,
   noneValueOpacity: 0.16
+
 }
 
+const maxOpacityValue = {
+  Confirmed: {
+    AccumulatedValue: 5000,
+    OriginalValue: 2500,
+    ByArea: 1.5,
+    ByPopulation: 5
+  },
+  Dead: {
+    AccumulatedValue: 400,
+    OriginalValue: 200,
+    ByConfirmed: .6,
+    ByArea: 1,
+    ByPopulation: 1
+  },
+  Cured: {
+    AccumulatedValue: 400,
+    OriginalValue: 200,
+    ByConfirmed: .8,
+    ByArea: 1,
+    ByPopulation: 1
+
+  }
+}
 
 
 var Dataset = Object;
@@ -290,13 +319,18 @@ function updateCityPathColor(cityID, color, alpha) {
     .attr('opacity', alpha)
 }
 
+function getCityArea(cityName) {
+  return cityAreaList[cityNameList.indexOf(cityName)]
+}
+function getCityPopulation(cityName) {
+  return cityPopulationList[cityNameList.indexOf(cityName)]
+}
 
 
 function updateMapColor(selectedKey = "sum", selectedDate = defaultDate, statisticMode = "OriginalValue") {
 
   jsonSet.forEach(json => {
     json.features.forEach(cityJson => {
-
       let val = getValueAccInterface(cityJson.properties.name,
         selectedDate, selectedKey)
       let sumVal = getValueAccInterface(cityJson.properties.name,
@@ -350,6 +384,9 @@ function getDataPrepared(selectedDate) {
         Dead_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "dead"),
         Cured: getValueInterface(cityJson.properties.name, selectedDate, "cured"),
         Cured_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "cured"),
+
+        Area: getCityArea(cityJson.properties.name),
+        Population: getCityPopulation(cityJson.properties.name)
       })
     })
   })
@@ -357,8 +394,7 @@ function getDataPrepared(selectedDate) {
 }
 
 function fetchDataViewModel(sKey, sDate, sMode) {
-  recolorMap(sKey)
-  //console.log("hello", sKey, DateToConsultString(sDate), sMode, DataRecords);
+
   let targetDataSet = DataRecords.filter(e => e.DateKey == DateToConsultString(sDate))
   if (targetDataSet.length == 0) return [];
 
@@ -387,8 +423,24 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       })
       break;
     case 'ByArea':
+      targetDataSet[0].records.forEach((e) => {
+        retDataSet.push({
+          key: e.key,
+          value: (e[sKey + '_Acc'] / e.Area).toFixed(4),
+          cityName: e.name,
+          provName: e.provName
+        })
+      })
       break;
-    case 'ByPopolation':
+    case 'ByPopulation':
+      targetDataSet[0].records.forEach((e) => {
+        retDataSet.push({
+          key: e.key,
+          value: (e[sKey + '_Acc'] / e.Population).toFixed(4),
+          cityName: e.name,
+          provName: e.provName
+        })
+      })
       break;
     case 'ByConfirmed':
       targetDataSet[0].records.forEach((e) => {
@@ -402,10 +454,22 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       })
       break;
   }
-  console.log(retDataSet);
+
+  setTimeout(() => {
+    retDataSet.forEach(rd => {
+      layer1.selectAll("#cityID-" + rd.key)
+        .transition()
+        .duration(500)
+        .attr("fill", Theme[sKey + "Color"])
+        .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode]) + Theme.noneValueOpacity)
+    })
+  }, 80);
+  
+
   return retDataSet.sort((a, b) => {
     return b.value - a.value;
   });
+
 }
 
 function recolorCityBorder(e) {
