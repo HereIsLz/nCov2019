@@ -285,7 +285,7 @@ function getOpacity(val, maxVal = 4000) {
 function updateCityPathColor(cityID, color, alpha) {
   d3.selectAll('#cityID-' + cityID)
     .transition()
-    .duration(320)
+    .duration(640)
     .attr('fill', color)
     .attr('opacity', alpha)
 }
