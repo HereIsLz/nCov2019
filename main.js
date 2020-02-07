@@ -65,7 +65,7 @@ const promiseList = json_provinces_arr.map(d => fetchGeoPath(d, 'china-geojson-m
 const projection = d3.geoMercator()
   .center([105, 38])
   .scale(720)
-  .translate([1000, 380])
+  .translate([420, 300])
 const pathMap = d3.geoPath().projection(projection);
 const layer1 = d3.select('#layer1')
 const layer2 = d3.select('#layer2')
