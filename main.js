@@ -11,6 +11,9 @@ const Theme = {
   sumAccentColor: '#e64a19',
   deadAccentColor: '#4a148c',
   curedAccentColor: '#43a047',
+  NoneValueColor: '#a0aeb2',
+  ByConfirm_DividedByZeroColor: '#666666',//比例下
+  ByConfirm_ZeroColor: '#e64a19',
 
   ConfirmedColor: '#e64a19',
   DeadColor: '#4a148c',
@@ -20,9 +23,9 @@ const Theme = {
   deadMaxValue: 400,
   curedMaxValue: 400,
 
-  mapBaselineWidth: 0.24,
-  mapProvlineWidth: 1.5,
-  noneValueOpacity: 0.16
+  mapBaselineWidth: 0.28,
+  mapProvlineWidth: 1.25,
+  noneValueOpacity: 0.1
 
 }
 
@@ -41,8 +44,8 @@ const maxOpacityValue = {
     ByPopulation: 1
   },
   Cured: {
-    AccumulatedValue: 400,
-    OriginalValue: 200,
+    AccumulatedValue: 200,
+    OriginalValue: 100,
     ByConfirmed: .8,
     ByArea: .2,
     ByPopulation: 1
@@ -221,7 +224,12 @@ function fetchData() {
             }
           ).then(
             function () {
-              updateMapColor();
+              CountByCountry_Confirmed_ViewModel =
+                d3.sum(Dataset.dataAccByDate[Dataset.dataAccByDate.length - 1].values, a => a.value.sum)
+              CountByCountry_Dead_ViewModel =
+                d3.sum(Dataset.dataAccByDate[Dataset.dataAccByDate.length - 1].values, a => a.value.dead)
+              CountByCountry_Cured_ViewModel =
+                d3.sum(Dataset.dataAccByDate[Dataset.dataAccByDate.length - 1].values, a => a.value.cured)
               const startDate = new Date(2020, 0, 10);
               const endDate = new Date(2020, (new Date()).getMonth(), (new Date()).getDate())
 
@@ -253,7 +261,8 @@ function renderGeoPath(json) {
     .attr('id', d => 'cityID-' + d.properties.id)
     .attr('class', 'city')
     .attr('d', pathMap)
-    .attr('fill', (d) => {
+    .attr('fill', 'transparent')
+    /*.attr('fill', (d) => {
       return getValueInterface(d.properties.name,
         defaultDate, "sum") == 0 ?
         Theme.secureAccentColor :
@@ -265,7 +274,7 @@ function renderGeoPath(json) {
       return v == 0 ?
         Theme.noneValueOpacity :
         getOpacity(v)
-    })
+    })*/
     .attr('stroke', Theme.backgroundColor)
     .attr('stroke-width', Theme.mapBaselineWidth)
     .classed('provID-' + json.provId, true)
@@ -328,43 +337,10 @@ function getCityPopulation(cityName) {
 }
 
 
-function updateMapColor(selectedKey = "sum", selectedDate = defaultDate, statisticMode = "OriginalValue") {
 
-  jsonSet.forEach(json => {
-    json.features.forEach(cityJson => {
-      let val = getValueAccInterface(cityJson.properties.name,
-        selectedDate, selectedKey)
-      let sumVal = getValueAccInterface(cityJson.properties.name,
-        selectedDate, "sum")
-      updateCityPathColor(
-        cityJson.properties.id,
-
-        sumVal == 0 ? Theme.secureAccentColor :
-          val == 0 ? Theme.sumAccentColor :
-            Theme[selectedKey + 'AccentColor'],
-
-        val == 0 ? Theme.noneValueOpacity :
-          getOpacity(val, Theme[selectedKey + 'MaxValue'])
-      )
-    })
-  })
-}
 
 fetchData()
 
-function recolorMap(k) {
-  switch (k) {
-    case 'Confirmed':
-      updateMapColor('sum');
-      return;
-    case 'Dead':
-      updateMapColor('dead');
-      return;
-    case 'Cured':
-      updateMapColor('cured');
-      return;
-  }
-}
 
 var DataRecords = [];
 
@@ -394,6 +370,10 @@ function getDataPrepared(selectedDate) {
   DataRecords.push(DataRecordForDate)
 }
 
+var CountByCountry_Confirmed_ViewModel = 0;
+var CountByCountry_Cured_ViewModel = 0;
+var CountByCountry_Dead_ViewModel = 0;
+
 function fetchDataViewModel(sKey, sDate, sMode) {
 
   let targetDataSet = DataRecords.filter(e => e.DateKey == DateToConsultString(sDate))
@@ -408,10 +388,22 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           key: e.key,
           value: e[sKey + '_Acc'],
           cityName: e.name,
-          provName: e.provName
+          provName: e.provName,
+          referValue: e.Confirmed_Acc > 0
         })
       })
-      //console.log(retDataSet)
+      setTimeout(() => {
+        retDataSet.forEach(rd => {
+          layer1.selectAll("#cityID-" + rd.key)
+            .transition()
+            .duration(500)
+            .attr("fill", rd.value > 0 ? Theme[sKey + "Color"] :
+              rd.referValue ? Theme.sumAccentColor :
+                Theme.NoneValueColor)
+            .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
+              + Theme.noneValueOpacity)
+        })
+      }, 80);
       break;
     case 'OriginalValue':
       targetDataSet[0].records.forEach((e) => {
@@ -419,9 +411,22 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           key: e.key,
           value: e[sKey],
           cityName: e.name,
-          provName: e.provName
+          provName: e.provName,
+          referValue: e.Confirmed > 0
         })
       })
+      setTimeout(() => {
+        retDataSet.forEach(rd => {
+          layer1.selectAll("#cityID-" + rd.key)
+            .transition()
+            .duration(500)
+            .attr("fill", rd.value > 0 ? Theme[sKey + "Color"] :
+              rd.referValue ? Theme.sumAccentColor :
+                Theme.NoneValueColor)
+            .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
+              + Theme.noneValueOpacity)
+        })
+      }, 80);
       break;
     case 'ByArea':
       targetDataSet[0].records.forEach((e) => {
@@ -429,9 +434,22 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           key: e.key,
           value: (e[sKey + '_Acc'] / e.Area).toFixed(4),
           cityName: e.name,
-          provName: e.provName
+          provName: e.provName,
+          referValue: e.Confirmed_Acc > 0
         })
       })
+      setTimeout(() => {
+        retDataSet.forEach(rd => {
+          layer1.selectAll("#cityID-" + rd.key)
+            .transition()
+            .duration(500)
+            .attr("fill", rd.value > 0 ? Theme[sKey + "Color"] :
+              rd.referValue ? Theme.sumAccentColor :
+                Theme.NoneValueColor)
+            .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
+              + Theme.noneValueOpacity)
+        })
+      }, 80);
       break;
     case 'ByPopulation':
       targetDataSet[0].records.forEach((e) => {
@@ -442,6 +460,16 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           provName: e.provName
         })
       })
+      setTimeout(() => {
+        retDataSet.forEach(rd => {
+          layer1.selectAll("#cityID-" + rd.key)
+            .transition()
+            .duration(500)
+            .attr("fill", Theme[sKey + "Color"])
+            .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
+              + Theme.noneValueOpacity)
+        })
+      }, 80);
       break;
     case 'ByConfirmed':
       targetDataSet[0].records.forEach((e) => {
@@ -453,19 +481,18 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           provName: e.provName
         })
       })
+      setTimeout(() => {
+        retDataSet.forEach(rd => {
+          layer1.selectAll("#cityID-" + rd.key)
+            .transition()
+            .duration(500)
+            .attr("fill", Theme[sKey + "Color"])
+            .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
+              + Theme.noneValueOpacity)
+        })
+      }, 80);
       break;
   }
-
-  setTimeout(() => {
-    retDataSet.forEach(rd => {
-      layer1.selectAll("#cityID-" + rd.key)
-        .transition()
-        .duration(500)
-        .attr("fill", Theme[sKey + "Color"])
-        .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode]) + Theme.noneValueOpacity)
-    })
-  }, 80);
-
 
   return retDataSet.sort((a, b) => {
     return b.value - a.value;
@@ -473,9 +500,6 @@ function fetchDataViewModel(sKey, sDate, sMode) {
 
 }
 
-function recolorCityBorder(e) {
-
-}
 
 var ExemptedKey = [];
 function HighlightCity(e) {
