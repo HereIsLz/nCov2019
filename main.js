@@ -46,7 +46,7 @@ const maxOpacityValue = {
   Cured: {
     AccumulatedValue: 200,
     OriginalValue: 100,
-    ByConfirmed: .8,
+    ByConfirmed: 1,
     ByArea: .2,
     ByPopulation: 1
 
@@ -432,7 +432,7 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       targetDataSet[0].records.forEach((e) => {
         retDataSet.push({
           key: e.key,
-          value: (e[sKey + '_Acc'] / e.Area).toFixed(4),
+          value: (e[sKey + '_Acc'] / e.Area),
           cityName: e.name,
           provName: e.provName,
           referValue: e.Confirmed_Acc > 0
@@ -443,9 +443,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           layer1.selectAll("#cityID-" + rd.key)
             .transition()
             .duration(500)
-            .attr("fill", rd.value > 0 ? Theme[sKey + "Color"] :
-              rd.referValue ? Theme.sumAccentColor :
-                Theme.NoneValueColor)
+            .attr("fill",
+              rd.referValue == 0 ? Theme.NoneValueColor :
+                rd.value > 0 ? Theme[sKey + "Color"] :
+                  Theme.sumAccentColor)
             .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
               + Theme.noneValueOpacity)
         })
@@ -455,9 +456,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       targetDataSet[0].records.forEach((e) => {
         retDataSet.push({
           key: e.key,
-          value: (e[sKey + '_Acc'] / e.Population).toFixed(4),
+          value: (e[sKey + '_Acc'] / e.Population),
           cityName: e.name,
-          provName: e.provName
+          provName: e.provName,
+          referValue: e.Confirmed_Acc > 0
         })
       })
       setTimeout(() => {
@@ -465,7 +467,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           layer1.selectAll("#cityID-" + rd.key)
             .transition()
             .duration(500)
-            .attr("fill", Theme[sKey + "Color"])
+            .attr("fill",
+              rd.referValue == 0 ? Theme.NoneValueColor :
+                rd.value > 0 ? Theme[sKey + "Color"] :
+                  Theme.sumAccentColor)
             .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
               + Theme.noneValueOpacity)
         })
@@ -476,9 +481,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
         var tmpVal = e[sKey + '_Acc']
         retDataSet.push({
           key: e.key,
-          value: e['Confirmed_Acc'] == 0 ? -1 : (tmpVal / e['Confirmed_Acc']).toFixed(3),
+          value: e['Confirmed_Acc'] == 0 ? -1 : (tmpVal / e['Confirmed_Acc']),
           cityName: e.name,
-          provName: e.provName
+          provName: e.provName,
+          referValue: e.Confirmed_Acc > 0
         })
       })
       setTimeout(() => {
@@ -486,9 +492,12 @@ function fetchDataViewModel(sKey, sDate, sMode) {
           layer1.selectAll("#cityID-" + rd.key)
             .transition()
             .duration(500)
-            .attr("fill", Theme[sKey + "Color"])
-            .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
-              + Theme.noneValueOpacity)
+            .attr("fill",
+              rd.referValue == 0 ? Theme.NoneValueColor :
+                rd.value > 0 ? Theme[sKey + "Color"] :
+                  Theme.sumAccentColor)
+            .attr("opacity", rd.value >= 0 ? Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
+              + Theme.noneValueOpacity : Theme.noneValueOpacity)
         })
       }, 80);
       break;
