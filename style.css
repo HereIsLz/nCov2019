@@ -5,8 +5,8 @@
 .TitleClass{font-size:36px;font-weight:700;color:#881719}
 .LabelClass{font-size:16px;font-weight:700;margin-bottom:-10px;margin-top:-2px}
 div::-webkit-scrollbar{width:8px}
-div::-webkit-scrollbar-thumb{margin-top:59px;background:#00000030;border-radius:2px; height: 60px;}
-div::-webkit-scrollbar-track{margin-top:59px;}
+div::-webkit-scrollbar-thumb{margin-top:59px;background:#00000030;border-radius:2px;height:60px}
+div::-webkit-scrollbar-track{margin-top:59px}
 #Pivot1-Tab1.is-selected{background-color:#4527a0!important}
 #Pivot1-Tab1:hover{background-color:#33158f!important}
 #Pivot1-Tab1:active{background-color:#1f0b5c!important}
@@ -15,4 +15,9 @@ div::-webkit-scrollbar-track{margin-top:59px;}
 #Pivot1-Tab2:active{background-color:#00423b!important}
 body{background-color:#f9f9fb}
 .ChoiceGroupLabelStyle{margin-left:28px}
+@media screen and (max-width:800px){
+.ControlContainer{margin:12px;min-width:480px;padding:16px;}
+}
+@media screen and (min-width:800px){
 .ControlContainer{position:absolute;left:12px;top:12px;width:480px;min-width:480px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden}
+}
