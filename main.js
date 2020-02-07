@@ -20,7 +20,8 @@ const Theme = {
   deadMaxValue: 400,
   curedMaxValue: 400,
 
-  mapBaselineWidth: 0.5,
+  mapBaselineWidth: 0.24,
+  mapProvlineWidth: 1.5,
   noneValueOpacity: 0.16
 
 }
@@ -28,22 +29,22 @@ const Theme = {
 const maxOpacityValue = {
   Confirmed: {
     AccumulatedValue: 5000,
-    OriginalValue: 2500,
-    ByArea: 1.5,
-    ByPopulation: 5
+    OriginalValue: 2000,
+    ByArea: .8,
+    ByPopulation: 15
   },
   Dead: {
     AccumulatedValue: 400,
     OriginalValue: 200,
     ByConfirmed: .6,
-    ByArea: 1,
+    ByArea: .2,
     ByPopulation: 1
   },
   Cured: {
     AccumulatedValue: 400,
     OriginalValue: 200,
     ByConfirmed: .8,
-    ByArea: 1,
+    ByArea: .2,
     ByPopulation: 1
 
   }
@@ -278,7 +279,7 @@ function renderGeoPath(json) {
     .attr('fill', 'transparent')
     .attr('opacity', 0)
     .attr('stroke', Theme.accentColor)
-    .attr('stroke-width', 1.4)
+    .attr('stroke-width', Theme.mapProvlineWidth)
 }
 
 function getValueInterface(cityName, selectedDate, selectedKey) {
@@ -464,7 +465,7 @@ function fetchDataViewModel(sKey, sDate, sMode) {
         .attr("opacity", Math.cbrt(rd.value / maxOpacityValue[sKey][sMode]) + Theme.noneValueOpacity)
     })
   }, 80);
-  
+
 
   return retDataSet.sort((a, b) => {
     return b.value - a.value;
@@ -493,3 +494,15 @@ function HighlightCity(e) {
   })
   return ExemptedKey;
 }
+
+const layer1_Prov = d3.select("#layer1_Prov")
+d3.json("china-geojson-master/china.json").then(
+  j => layer1_Prov.selectAll('.borders')
+    .data(j.features)
+    .enter()
+    .append('path')
+    .attr('d', pathMap)
+    .attr('fill', 'transparent')
+    .attr('stroke', 'white')
+    .attr('stroke-width', Theme.mapProvlineWidth)
+)
