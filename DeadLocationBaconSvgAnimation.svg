@@ -1,0 +1,12 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="32px" height="32px" xml:space="preserve">
+    <circle cx="16" cy="16" stroke="#1f0b5c" fill="none">
+        <animate attributeName="opacity" attributeType="XML"  values="0; 1; 1; 1; 0.5; 0" begin="0s" dur=".9s" repeatCount="indefinite" />
+        <animate attributeName="stroke-width" attributeType="XML"  values="0; 1.5; 2; 1.5; 0.8; 0" begin="0s" dur=".9s" repeatCount="indefinite" />
+        <animate attributeName="r" attributeType="XML" from="0" to="12" begin="0s" dur=".9s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="16" cy="16" stroke="#1f0b5c" fill="none">
+        <animate attributeName="opacity" attributeType="XML"  values="0; 0; 1; 0.7; 0" begin="0s" dur=".9s" repeatCount="indefinite" />
+        <animate attributeName="stroke-width" attributeType="XML"  values="0; 0; 3; 4.5; 4.5" begin="0s" dur=".9s" repeatCount="indefinite" />
+        <animate attributeName="r" attributeType="XML" values="0; 0; 1.4; 2; 2.1" begin="0s" dur=".9s" repeatCount="indefinite" />
+    </circle>
+</svg>

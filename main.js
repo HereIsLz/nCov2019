@@ -19,14 +19,11 @@ const Theme = {
   DeadColor: '#4527a0',
   CuredColor: '#1e9255',
 
-  sumMaxValue: 5000,
-  deadMaxValue: 400,
-  curedMaxValue: 400,
-
   mapBaselineWidth: 0.28,
   mapProvlineWidth: 1.25,
-  noneValueOpacity: 0.1
+  noneValueOpacity: 0.1,
 
+  svgSize: 32
 }
 
 const maxOpacityValue = {
@@ -65,10 +62,10 @@ const promiseList = json_provinces_arr.map(d => fetchGeoPath(d, 'china-geojson-m
 const projection = d3.geoMercator()
   .center([105, 38])
   .scale(720)
-  .translate([420, 300])
+  .translate([420, 290])
 const pathMap = d3.geoPath().projection(projection);
 const layer1 = d3.select('#layer1')
-const layer2 = d3.select('#layer2')
+const layer2 = d3.select('#layer2').attr("opacity", .8)
 function DateToConsultString(dt) {
   return (dt.getMonth() + 1) + "月" + dt.getDate() + "日"
 }
@@ -263,33 +260,22 @@ function renderGeoPath(json) {
     .attr('class', 'city')
     .attr('d', pathMap)
     .attr('fill', 'transparent')
-    /*.attr('fill', (d) => {
-      return getValueInterface(d.properties.name,
-        defaultDate, "sum") == 0 ?
-        Theme.secureAccentColor :
-        Theme.sumAccentColor
-    })
-    .attr('opacity', (d) => {
-      let v = getValueInterface(d.properties.name,
-        defaultDate, "sum");
-      return v == 0 ?
-        Theme.noneValueOpacity :
-        getOpacity(v)
-    })*/
+
     .attr('stroke', Theme.backgroundColor)
     .attr('stroke-width', Theme.mapBaselineWidth)
     .classed('provID-' + json.provId, true)
+
   borderCollections = layer2
-    .selectAll('.borders')
+    .selectAll('.centerPoints')
     .data(json.features)
     .enter()
-    .append('path')
-    .attr('id', d => 'borderID-' + d.properties.id)
-    .attr('d', pathMap)
-    .attr('fill', 'transparent')
-    .attr('opacity', 0)
-    .attr('stroke', "#454545")
-    .attr('stroke-width', Theme.mapProvlineWidth)
+    .append('g')
+    .attr('transform', d => 'translate(' + (projection(d.properties.cp ? d.properties.cp : [0, 0])[0] - Theme.svgSize / 2) +
+      ',' + (projection(d.properties.cp ? d.properties.cp : [0, 0])[1] - Theme.svgSize / 2) + ')')
+
+    .attr("id", d => "centerPoint-" + d.properties.id)
+    .attr("class", "centerPoint")
+
 }
 
 function getValueInterface(cityName, selectedDate, selectedKey) {
@@ -375,11 +361,16 @@ var CountByCountry_Confirmed_ViewModel = 0;
 var CountByCountry_Cured_ViewModel = 0;
 var CountByCountry_Dead_ViewModel = 0;
 
+
+var _sKey;
 function fetchDataViewModel(sKey, sDate, sMode) {
 
   let targetDataSet = DataRecords.filter(e => e.DateKey == DateToConsultString(sDate))
   if (targetDataSet.length == 0) return [];
   InitializeLegend(sKey, sMode);
+
+  _sKey = sKey;
+  layer2.selectAll("image").attr('xlink:href', _sKey + 'LocationBaconSvgAnimation.svg')
   let retDataSet = [];
 
   switch (sMode) {
@@ -514,15 +505,15 @@ function fetchDataViewModel(sKey, sDate, sMode) {
 var ExemptedKey = [];
 function InitializeHighlight(e) {
 
-  ExemptedKey.forEach((t) => {
-    d3.selectAll("#borderID-" + t)
-      .attr('opacity', 0)
-  })
+  layer2.selectAll("image").remove();
+
   ExemptedKey = [];
   e.forEach(ee => ExemptedKey.push(ee.key))
   ExemptedKey.forEach((t) => {
-    d3.selectAll("#borderID-" + t)
-      .attr('opacity', 1)
+    d3.select("#centerPoint-" + t)
+      .append('image').attr('xlink:href', _sKey + 'LocationBaconSvgAnimation.svg')
+      .attr('height', Theme.svgSize)
+      .attr('width', Theme.svgSize)
   })
   return ExemptedKey;
 }
@@ -566,7 +557,7 @@ function InitializeLegend(sKey, sMode) {
     sKey == "Confirmed" ?
       sMode == "AccumulatedValue" ? [10, 50, 100, 300, 500, 1000, 3000, 10000] :
         sMode == "OriginalValue" ? [5, 10, 30, 50, 100, 200, 500, 1500] :
-          sMode == "ByArea" ? [0.001, 0.005, 0.01, 0.05, 0.1, 0.3, 0.8, 1.2] :
+          sMode == "ByArea" ? [0.001, 0.005, 0.01, 0.05, 0.1, 0.3, 0.5, 1.2] :
             [0.05, 0.1, 0.25, 0.5, 1, 3, 5, 10]
       : sKey == "Cured" ?
         sMode == "AccumulatedValue" ? [1, 5, 10, 30, 50, 100, 300, 500] :
