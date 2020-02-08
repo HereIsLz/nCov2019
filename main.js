@@ -7,17 +7,17 @@ const Theme = {
   baseAccentColor: 'white',
   secureAccentColor: '#1565c0',
 
-  accentColor: '#881719',
-  sumAccentColor: '#e64a19',
-  deadAccentColor: '#4a148c',
-  curedAccentColor: '#43a047',
-  NoneValueColor: '#a0aeb2',
+  accentColor: '#d03218',
+  sumAccentColor: '#d03218',
+  deadAccentColor: '#4527a0',
+  curedAccentColor: '#1e9255',
+  NoneValueColor: '#70727e',
   ByConfirm_DividedByZeroColor: '#666666',//比例下
-  ByConfirm_ZeroColor: '#e64a19',
+  ByConfirm_ZeroColor: '#d03218',
 
-  ConfirmedColor: '#e64a19',
-  DeadColor: '#4a148c',
-  CuredColor: '#43a047',
+  ConfirmedColor: '#d03218',
+  DeadColor: '#4527a0',
+  CuredColor: '#1e9255',
 
   sumMaxValue: 5000,
   deadMaxValue: 400,
@@ -31,7 +31,7 @@ const Theme = {
 
 const maxOpacityValue = {
   Confirmed: {
-    AccumulatedValue: 5000,
+    AccumulatedValue: 8000,
     OriginalValue: 2000,
     ByArea: .8,
     ByPopulation: 15
@@ -47,7 +47,7 @@ const maxOpacityValue = {
     AccumulatedValue: 200,
     OriginalValue: 100,
     ByConfirmed: 1,
-    ByArea: .2,
+    ByArea: .05,
     ByPopulation: 1
 
   }
@@ -252,6 +252,7 @@ function fetchGeoPath(file_name, file_dir) {
   return d3.json(file_dir + file_name + '.json')
 }
 
+var borderCollections;
 function renderGeoPath(json) {
   layer1
     .selectAll('.cities')
@@ -278,7 +279,7 @@ function renderGeoPath(json) {
     .attr('stroke', Theme.backgroundColor)
     .attr('stroke-width', Theme.mapBaselineWidth)
     .classed('provID-' + json.provId, true)
-  layer2
+  borderCollections = layer2
     .selectAll('.borders')
     .data(json.features)
     .enter()
@@ -287,7 +288,7 @@ function renderGeoPath(json) {
     .attr('d', pathMap)
     .attr('fill', 'transparent')
     .attr('opacity', 0)
-    .attr('stroke', Theme.accentColor)
+    .attr('stroke', "#454545")
     .attr('stroke-width', Theme.mapProvlineWidth)
 }
 
@@ -378,7 +379,7 @@ function fetchDataViewModel(sKey, sDate, sMode) {
 
   let targetDataSet = DataRecords.filter(e => e.DateKey == DateToConsultString(sDate))
   if (targetDataSet.length == 0) return [];
-
+  InitializeLegend(sKey, sMode);
   let retDataSet = [];
 
   switch (sMode) {
@@ -499,10 +500,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
             .attr("opacity", rd.value >= 0 ? Math.cbrt(rd.value / maxOpacityValue[sKey][sMode])
               + Theme.noneValueOpacity : Theme.noneValueOpacity)
         })
+
       }, 80);
       break;
   }
-
   return retDataSet.sort((a, b) => {
     return b.value - a.value;
   });
@@ -511,16 +512,14 @@ function fetchDataViewModel(sKey, sDate, sMode) {
 
 
 var ExemptedKey = [];
-function HighlightCity(e) {
+function InitializeHighlight(e) {
+
   ExemptedKey.forEach((t) => {
     d3.selectAll("#borderID-" + t)
       .attr('opacity', 0)
   })
   ExemptedKey = [];
-  for (var ek in e._exemptedIndices) {
-    ExemptedKey.push(
-      e._items[ek].key);
-  }
+  e.forEach(ee => ExemptedKey.push(ee.key))
   ExemptedKey.forEach((t) => {
     d3.selectAll("#borderID-" + t)
       .attr('opacity', 1)
@@ -539,3 +538,93 @@ d3.json("china-geojson-master/china.json").then(
     .attr('stroke', 'white')
     .attr('stroke-width', Theme.mapProvlineWidth)
 )
+
+
+function InitializeLegend(sKey, sMode) {
+  console.log(sKey, sMode)
+  d3.select("#LegendLayer").remove();
+  let lc = d3.select("#LegendCanvas").append("g").attr("id", "LegendLayer");
+  const LegendConfig = {
+    rectWidth: 38,
+    rectHeight: 14,
+    rectPadding: 8,
+    textRectPadding: 12,
+  }
+  lc.append("rect").attr("width", LegendConfig.rectWidth)
+    .attr("height", LegendConfig.rectHeight)
+    .attr("fill", Theme.NoneValueColor)
+    .attr("opacity", Theme.noneValueOpacity)
+  lc.append("text").text(sMode != "OriginalValue" ? "无累计确诊" : "无新增确诊")
+    .attr('y', 0.5 * LegendConfig.rectHeight + 1.3)
+    .attr('x', LegendConfig.rectWidth + LegendConfig.rectPadding)
+    .attr('font-size', "14px")
+    .attr("text-anchor", "start")
+    .attr("dominant-baseline", 'middle')
+
+
+  const LegendLevel =
+    sKey == "Confirmed" ?
+      sMode == "AccumulatedValue" ? [10, 50, 100, 300, 500, 1000, 3000, 10000] :
+        sMode == "OriginalValue" ? [5, 10, 30, 50, 100, 200, 500, 1500] :
+          sMode == "ByArea" ? [0.001, 0.005, 0.01, 0.05, 0.1, 0.3, 0.8, 1.2] :
+            [0.05, 0.1, 0.25, 0.5, 1, 3, 5, 10]
+      : sKey == "Cured" ?
+        sMode == "AccumulatedValue" ? [1, 5, 10, 30, 50, 100, 300, 500] :
+          sMode == "OriginalValue" ? [1, 3, 5, 10, 20, 30, 50, 100] :
+            sMode == "ByConfirmed" ? [0.005, 0.01, 0.025, 0.05, .1, .25, .5, 1] :
+              sMode == "ByArea" ? [.00001, .00005, .001, .003, .005, .01, .03, .05] :
+                [0.001, 0.005, 0.01, 0.03, .05, .1, .3, 0.5]
+        :
+        sMode == "AccumulatedValue" ? [1, 5, 10, 30, 50, 100, 300, 500] :
+          sMode == "OriginalValue" ? [1, 3, 5, 10, 20, 30, 50, 100] :
+            sMode == "ByConfirmed" ? [0.005, 0.01, 0.025, 0.05, .1, .25, .5, 1] :
+              sMode == "ByArea" ? [.00001, .00005, .001, .003, .005, .01, .03, .05] :
+                [0.001, 0.005, 0.01, 0.03, .05, .1, .3, 0.5];
+
+  const OpacityOperator = e => Math.cbrt(e / maxOpacityValue[sKey][sMode])
+    + Theme.noneValueOpacity;
+
+  var xOffset = 0;
+
+  LegendLevel.forEach((e) => {
+    lc.append("rect").attr("width", LegendConfig.rectWidth)
+      .attr("x", xOffset)
+      .attr("y", LegendConfig.textRectPadding + LegendConfig.rectHeight)
+      .attr("height", LegendConfig.rectHeight)
+      .attr("fill", Theme[sKey + "Color"])
+      .attr("opacity", OpacityOperator(e))
+
+    lc.append("text").text(e)
+      .attr('y', LegendConfig.textRectPadding + 1.5 * LegendConfig.rectHeight + 1.3)
+      .attr('x', xOffset + 1)
+      .attr('font-size', "10px")
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", 'middle')
+      .attr('fill', OpacityOperator(e) > 0.5 ? 'white' : 'black')
+    xOffset += LegendConfig.rectWidth + LegendConfig.rectPadding;
+  }
+  )
+  lc.append("rect").attr("width", LegendConfig.rectWidth)
+    .attr("height", LegendConfig.rectHeight)
+    .attr("fill", Theme.NoneValueColor)
+    .attr("opacity", Theme.noneValueOpacity)
+
+  if (sKey != "Confirmed") {
+    lc.append("rect").attr("width", LegendConfig.rectWidth)
+      .attr("height", LegendConfig.rectHeight)
+      .attr("fill", Theme.ConfirmedColor)
+      .attr("opacity", Theme.noneValueOpacity)
+      .attr("x", (LegendConfig.rectWidth + LegendConfig.rectPadding) * 3)
+
+    lc.append("text").text(
+      sMode != "OriginalValue" ?
+        sKey == "Cured" ? "有累计确诊但无累计治愈" : "有新增确诊但无新增治愈" :
+        sKey == "Dead" ? "有累计确诊但无累计死亡" : "有新增确诊但无新增死亡"
+    )
+      .attr('y', 0.5 * LegendConfig.rectHeight + 1.3)
+      .attr('x', (LegendConfig.rectWidth + LegendConfig.rectPadding) * 4)
+      .attr('font-size', "14px")
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", 'middle')
+  }
+}

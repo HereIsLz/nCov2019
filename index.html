@@ -7,17 +7,21 @@
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:400,700" rel="stylesheet" type="text/css" />
     <link href="style.css" rel="stylesheet" type="text/css" />
     <script src="PreloadLists.js"></script>
+    <title>2019-nCoV 疫情地图</title> 
 </head>
 
 <body>
-    <div class="TitleForSmallScreen">疫情地图</div>
+    <div class="TitleForSmallScreen">2019-nCoV 疫情地图</div>
     <svg class="CanvasContainer">
         <g id="layer1" />
         <g id="layer1_Prov" />
         <g id="layer2" />
         <g id="legend" />
     </svg>
-
+    <div class="LegendContainer">
+        <svg height="100%" width="100%" id="LegendCanvas">
+        </svg>
+    </div>
     <div>
         <div id="app" />
     </div>

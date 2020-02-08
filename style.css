@@ -12,6 +12,12 @@ div::-webkit-scrollbar-track{margin-top:59px}
 #Pivot1-Tab2.is-selected{background-color:#00695c!important}
 #Pivot1-Tab2:hover{background-color:#00574e!important}
 #Pivot1-Tab2:active{background-color:#00423b!important}
+#Pivot2-Tab1.is-selected{background-color:#4527a0!important}
+#Pivot2-Tab1:hover{background-color:#33158f!important}
+#Pivot2-Tab1:active{background-color:#1f0b5c!important}
+#Pivot2-Tab2.is-selected{background-color:#00695c!important}
+#Pivot2-Tab2:hover{background-color:#00574e!important}
+#Pivot2-Tab2:active{background-color:#00423b!important}
 body{background-color:#f9f9fb}
 .ChoiceGroupLabelStyle{margin-left:28px}
 @media screen and (max-width:992px){
@@ -19,16 +25,20 @@ body{background-color:#f9f9fb}
 #Pivot1-Tab1{width:33%!important}
 #Pivot1-Tab0{width:33%!important}
 #Pivot1-Tab2{width:33%!important}
+#Pivot2-Tab1{width:33%!important}
+#Pivot2-Tab0{width:33%!important}
+#Pivot2-Tab2{width:33%!important}
 .TitleClass{display:none}
 .ms-ChoiceField{min-width:33.3%!important}
 .ms-ChoiceFieldGroup-flexContainer{min-width:100%!important}
-.TitleForSmallScreen{padding:28px;padding-bottom:40px;font-size:72px;font-weight:700;color:#881719}
-.CanvasContainer{width:100%;height:600px}
-
+.TitleForSmallScreen{padding:24px;padding-bottom:40px;font-size:72px;font-weight:700;color:#881719}
+.CanvasContainer{padding:24px;width:calc(100% - 56px);height:600px}
+.LegendContainer{padding:24px;width:calc(100% - 56px);height:40px}
 }
 @media screen and (min-width:992px){
+.LegendContainer{background-color:#f9f9fba0;position:absolute;right:12px;bottom:12px;width:360px;min-width:360px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:40px}
 .TitleClass{font-size:36px;font-weight:700;color:#881719}
 .TitleForSmallScreen{display:none}
 .CanvasContainer{width:820px;height:600px;margin-left:calc(50% - 148px);margin-top:calc(50vh - 300px)}
-.ControlContainer{background-color: #f9f9fba0;position:absolute;left:12px;top:12px;width:480px;min-width:480px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden}
+.ControlContainer{background-color:#f9f9fba0;position:absolute;left:12px;top:12px;width:480px;min-width:480px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden}
 }
