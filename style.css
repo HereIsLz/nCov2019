@@ -29,6 +29,6 @@ body{background-color:#f9f9fb}
 @media screen and (min-width:992px){
 .TitleClass{font-size:36px;font-weight:700;color:#881719}
 .TitleForSmallScreen{display:none}
-.CanvasContainer{width:820px;height:600px;margin-left:calc(50% - 140px);margin-top:calc(50vh - 300px)}
+.CanvasContainer{width:820px;height:600px;margin-left:calc(50% - 148px);margin-top:calc(50vh - 300px)}
 .ControlContainer{background-color: #f9f9fba0;position:absolute;left:12px;top:12px;width:480px;min-width:480px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden}
 }
