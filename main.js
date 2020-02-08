@@ -357,11 +357,11 @@ function getDataPrepared(selectedDate) {
         name: cityJson.properties.name,
         provName: json_provinces_provinceName[json.provId],
         Confirmed: getValueInterface(cityJson.properties.name, selectedDate, "sum"),
-        Confirmed_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "sum"),
+        ConfirmedAccumulatedValue: getValueAccInterface(cityJson.properties.name, selectedDate, "sum"),
         Dead: getValueInterface(cityJson.properties.name, selectedDate, "dead"),
-        Dead_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "dead"),
+        DeadAccumulatedValue: getValueAccInterface(cityJson.properties.name, selectedDate, "dead"),
         Cured: getValueInterface(cityJson.properties.name, selectedDate, "cured"),
-        Cured_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "cured"),
+        CuredAccumulatedValue: getValueAccInterface(cityJson.properties.name, selectedDate, "cured"),
         Area: getCityArea(cityJson.properties.name),
         Population: getCityPopulation(cityJson.properties.name),
         ConfirmedByArea: 0,
@@ -373,14 +373,14 @@ function getDataPrepared(selectedDate) {
         CuredByPopulation: 0,
         CuredByConfirmed: 0,
       }
-      tmpRet.ConfirmedByArea = tmpRet.Confirmed_Acc / tmpRet.Area;
-      tmpRet.CuredByArea = tmpRet.Cured_Acc / tmpRet.Area;
-      tmpRet.DeadByArea = tmpRet.Dead_Acc / tmpRet.Area;
-      tmpRet.ConfirmedByPopulation = tmpRet.Confirmed_Acc / tmpRet.Population;
-      tmpRet.CuredByPopulation = tmpRet.Cured_Acc / tmpRet.Population;
-      tmpRet.DeadByPopulation = tmpRet.Dead_Acc / tmpRet.Population;
-      tmpRet.CuredByConfirmed = tmpRet.Confirmed_Acc > 0 ? (tmpRet.Cured_Acc / tmpRet.Confirmed_Acc) : -1;
-      tmpRet.DeadByConfirmed = tmpRet.Confirmed_Acc > 0 ? (tmpRet.Dead_Acc / tmpRet.Confirmed_Acc) : -1;
+      tmpRet.ConfirmedByArea = tmpRet.ConfirmedAccumulatedValue / tmpRet.Area;
+      tmpRet.CuredByArea = tmpRet.CuredAccumulatedValue / tmpRet.Area;
+      tmpRet.DeadByArea = tmpRet.DeadAccumulatedValue / tmpRet.Area;
+      tmpRet.ConfirmedByPopulation = tmpRet.ConfirmedAccumulatedValue / tmpRet.Population;
+      tmpRet.CuredByPopulation = tmpRet.CuredAccumulatedValue / tmpRet.Population;
+      tmpRet.DeadByPopulation = tmpRet.DeadAccumulatedValue / tmpRet.Population;
+      tmpRet.CuredByConfirmed = tmpRet.ConfirmedAccumulatedValue > 0 ? (tmpRet.CuredAccumulatedValue / tmpRet.ConfirmedAccumulatedValue) : 0;
+      tmpRet.DeadByConfirmed = tmpRet.ConfirmedAccumulatedValue > 0 ? (tmpRet.DeadAccumulatedValue / tmpRet.ConfirmedAccumulatedValue) : 0;
       DataRecordForDate.records.push(tmpRet)
     })
   })
@@ -407,10 +407,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       targetDataSet[0].records.forEach((e) => {
         retDataSet.push({
           key: e.key,
-          value: e[sKey + '_Acc'],
+          value: e[sKey + 'AccumulatedValue'],
           cityName: e.name,
           provName: e.provName,
-          referValue: e.Confirmed_Acc > 0
+          referValue: e.ConfirmedAccumulatedValue > 0
         })
       })
       setTimeout(() => {
@@ -453,10 +453,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       targetDataSet[0].records.forEach((e) => {
         retDataSet.push({
           key: e.key,
-          value: (e[sKey + '_Acc'] / e.Area),
+          value: e[sKey + sMode],
           cityName: e.name,
           provName: e.provName,
-          referValue: e.Confirmed_Acc > 0
+          referValue: e.ConfirmedAccumulatedValue > 0
         })
       })
       setTimeout(() => {
@@ -477,10 +477,10 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       targetDataSet[0].records.forEach((e) => {
         retDataSet.push({
           key: e.key,
-          value: (e[sKey + '_Acc'] / e.Population),
+          value: (e[sKey + sMode]),
           cityName: e.name,
           provName: e.provName,
-          referValue: e.Confirmed_Acc > 0
+          referValue: e.ConfirmedAccumulatedValue > 0
         })
       })
       setTimeout(() => {
@@ -499,13 +499,13 @@ function fetchDataViewModel(sKey, sDate, sMode) {
       break;
     case 'ByConfirmed':
       targetDataSet[0].records.forEach((e) => {
-        var tmpVal = e[sKey + '_Acc']
+        var tmpVal = e[sKey + 'AccumulatedValue']
         retDataSet.push({
           key: e.key,
-          value: e['Confirmed_Acc'] == 0 ? -1 : (tmpVal / e['Confirmed_Acc']),
+          value: e[sKey + sMode],
           cityName: e.name,
           provName: e.provName,
-          referValue: e.Confirmed_Acc > 0
+          referValue: e.ConfirmedAccumulatedValue > 0
         })
       })
       setTimeout(() => {
@@ -701,7 +701,7 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
       let tmpDate = startDate;
       while (tmpDate.getTime() < endDate.getTime()) {
         t.push(DataRecords.filter(e => e.DateKey == DateToConsultString(tmpDate))[0].records
-          .filter(e => e.key == selectedCity.key)[0][_sKey + "_Acc"])
+          .filter(e => e.key == selectedCity.key)[0][_sKey + (_sMode == "OriginalValue" ? "" : _sMode)])
         tmpDate = new Date(tmpDate.getTime() + 86400000);
       }
       lineChartData.push(t);
