@@ -1,10 +1,9 @@
 
 const __DEBUG = false;
-const defaultDate = "2月4日"
-
+const startDate = new Date(2020, 0, 10);
+const endDate = new Date(2020, (new Date()).getMonth(), (new Date()).getDate())
 const Theme = {
-  backgroundColor: 'white',
-  baseAccentColor: 'white',
+  backgroundColor: '#f9f9fb',
   secureAccentColor: '#1565c0',
 
   accentColor: '#d03218',
@@ -243,8 +242,7 @@ function fetchData() {
                 d3.sum(Dataset.dataAccByDate[Dataset.dataAccByDate.length - 1].values, a => a.value.dead)
               CountByCountry_Cured_ViewModel =
                 d3.sum(Dataset.dataAccByDate[Dataset.dataAccByDate.length - 1].values, a => a.value.cured)
-              const startDate = new Date(2020, 0, 10);
-              const endDate = new Date(2020, (new Date()).getMonth(), (new Date()).getDate())
+
 
               var tmpDate = startDate;
 
@@ -354,7 +352,7 @@ function getDataPrepared(selectedDate) {
   }
   jsonSet.forEach(json => {
     json.features.forEach(cityJson => {
-      DataRecordForDate.records.push({
+      let tmpRet = {
         key: +cityJson.properties.id,
         name: cityJson.properties.name,
         provName: json_provinces_provinceName[json.provId],
@@ -364,10 +362,26 @@ function getDataPrepared(selectedDate) {
         Dead_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "dead"),
         Cured: getValueInterface(cityJson.properties.name, selectedDate, "cured"),
         Cured_Acc: getValueAccInterface(cityJson.properties.name, selectedDate, "cured"),
-
         Area: getCityArea(cityJson.properties.name),
-        Population: getCityPopulation(cityJson.properties.name)
-      })
+        Population: getCityPopulation(cityJson.properties.name),
+        ConfirmedByArea: 0,
+        ConfirmedByPopulation: 0,
+        DeadByArea: 0,
+        DeadByPopulation: 0,
+        DeadByConfirmed: 0,
+        CuredByArea: 0,
+        CuredByPopulation: 0,
+        CuredByConfirmed: 0,
+      }
+      tmpRet.ConfirmedByArea = tmpRet.Confirmed_Acc / tmpRet.Area;
+      tmpRet.CuredByArea = tmpRet.Cured_Acc / tmpRet.Area;
+      tmpRet.DeadByArea = tmpRet.Dead_Acc / tmpRet.Area;
+      tmpRet.ConfirmedByPopulation = tmpRet.Confirmed_Acc / tmpRet.Population;
+      tmpRet.CuredByPopulation = tmpRet.Cured_Acc / tmpRet.Population;
+      tmpRet.DeadByPopulation = tmpRet.Dead_Acc / tmpRet.Population;
+      tmpRet.CuredByConfirmed = tmpRet.Confirmed_Acc > 0 ? (tmpRet.Cured_Acc / tmpRet.Confirmed_Acc) : -1;
+      tmpRet.DeadByConfirmed = tmpRet.Confirmed_Acc > 0 ? (tmpRet.Dead_Acc / tmpRet.Confirmed_Acc) : -1;
+      DataRecordForDate.records.push(tmpRet)
     })
   })
   DataRecords.push(DataRecordForDate)
@@ -387,7 +401,7 @@ function fetchDataViewModel(sKey, sDate, sMode) {
   _sKey = sKey, _sDate = sDate, _sMode = sMode;
   layer2.selectAll("image").attr('xlink:href', _sKey + 'LocationBaconSvgAnimation.svg')
   let retDataSet = [];
-
+  UpdateSelectedCityInfo();
   switch (sMode) {
     case 'AccumulatedValue':
       targetDataSet[0].records.forEach((e) => {
@@ -518,8 +532,9 @@ function fetchDataViewModel(sKey, sDate, sMode) {
 
 
 var ExemptedKey = [];
+var _selectionList;
 function InitializeHighlight(e) {
-
+  _selectionList = e;
   layer2.selectAll("image").remove();
   UpdateSelectedCityInfo(e)
   ExemptedKey = [];
@@ -629,27 +644,38 @@ function InitializeLegend(sKey, sMode) {
 const InfoCanvas = d3.select("#InfoCanvas")
 InfoCanvas.append("rect").attr('width', "100%").attr('height', 1)
   .attr('y', 104).attr("fill", "#00000030")
-InfoCanvas.append("text").attr('y', 104)
+InfoCanvas.append("text").attr('y', 104).attr("fill", "#00000030")
   .text("1 月 10 日")
   .attr("text-anchor", "start")
   .attr("dominant-baseline", "text-before-edge")
   .attr('font-size', 14)
-InfoCanvas.append("text").attr('y', 104)
+InfoCanvas.append("text").attr('y', 104).attr("fill", "#00000030")
   .text("2020 年")
   .attr("text-anchor", "start")
   .attr("dominant-baseline", "text-after-edge")
   .attr('font-size', 14)
-InfoCanvas.append("text").attr('y', 104).attr('x', '100%')
-  .text((new Date().getMonth() + 1) + " 月 " + (new Date().getDate()) + " 日 ")
+InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#00000030")
+  .text((new Date().getMonth() + 1) + " 月 " + (new Date().getDate() - 1) + " 日 ")
   .attr("text-anchor", "end")
   .attr("dominant-baseline", "text-before-edge")
   .attr('font-size', 14)
-InfoCanvas.append("text").attr('y', 104).attr('x', '100%')
+InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#00000030")
   .text("2020 年")
   .attr("text-anchor", "end")
   .attr("dominant-baseline", "text-after-edge")
   .attr('font-size', 14)
-function UpdateSelectedCityInfo(selectionList) {
+
+
+function UpdateSelectedCityInfo(selectionList = _selectionList) {
+  InfoCanvas.selectAll("g").transition().duration(300).attr("opacity", 0);
+  setTimeout(() => {
+    UpdateSelectedCityInfo_Core(selectionList);
+  }, 120);
+}
+
+function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
+  InfoCanvas.selectAll("g").remove();
+
   let labelInnerText = "";
   if (selectionList.length > 0) {
     labelInnerText += " (" + selectionList[0].cityName;
@@ -657,14 +683,80 @@ function UpdateSelectedCityInfo(selectionList) {
       for (var i = 1; i < 5; i++)
         labelInnerText += "、" + selectionList[i].cityName;
       labelInnerText += "等 " + selectionList.length + " 座城市";
+
     }
     else {
       for (var i = 1; i < selectionList.length; i++)
         labelInnerText += "、" + selectionList[i].cityName;
     }
     labelInnerText += ")"
+
+
+    let TimelineLayer = InfoCanvas.append("g").attr('opacity', 0);
+
+
+    let lineChartData = [];
+    selectionList.forEach((selectedCity) => {
+      let t = [];
+      let tmpDate = startDate;
+      while (tmpDate.getTime() < endDate.getTime()) {
+        t.push(DataRecords.filter(e => e.DateKey == DateToConsultString(tmpDate))[0].records
+          .filter(e => e.key == selectedCity.key)[0][_sKey + "_Acc"])
+        tmpDate = new Date(tmpDate.getTime() + 86400000);
+      }
+      lineChartData.push(t);
+    })
+
+    let lineChartData_Sum = lineChartData.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+
+    let charMax = d3.max(lineChartData_Sum) / 90;
+    charMax = charMax > 0.2 ? charMax : 0.2;
+
+    let boundingWidth = document.getElementById("InfoCanvas").getBoundingClientRect().width;
+
+    var pathGenerator = d3.line()
+      .x(function (d, i) { return (i + 0.5) * (boundingWidth / lineChartData_Sum.length); }) // set the x values for the line generator
+      .y(function (d) { return 105 - d / charMax; }) // set the y values for the line generator 
+      .curve(d3.curveCardinal)
+
+    TimelineLayer
+      .selectAll(".LineChartNode")
+      .data(lineChartData_Sum)
+      .enter()
+      .append('circle')
+      .attr('cx', (d, i) => (100 / lineChartData_Sum.length * (i + 0.5)) + '%')
+      .attr("cy", d => (105 - (d / charMax)))
+      .attr('r', 5)
+      .attr('fill', Theme[_sKey + "Color"])
+      .attr('stroke', Theme.backgroundColor)
+      .attr('stroke-width', Theme.mapProvlineWidth)
+
+    TimelineLayer.append('path')
+      .attr('d', pathGenerator(lineChartData_Sum))
+      .attr('fill', 'none')
+      .attr('stroke', Theme[_sKey + "Color"])
+      .attr('stroke-width', Theme.mapProvlineWidth)
+
+
+    if (selectionList.length <= 5) {
+      lineChartData.forEach((lineData) => {
+
+        TimelineLayer
+          .selectAll(".LineChartNode")
+          .data(lineData)
+          .enter()
+          .append('circle')
+          .attr('cx', (d, i) => (100 / lineData.length * (i + 0.5)) + '%')
+          .attr("cy", d => (105 - (d / charMax)))
+          .attr('r', 3)
+          .attr('fill', Theme[_sKey + "Color"])
+          .attr('stroke', Theme.backgroundColor)
+          .attr('stroke-width', Theme.mapProvlineWidth)
+
+      })
+    }
+    TimelineLayer.transition().duration(200).attr('opacity', 1);
   }
   d3.select("#InfoLabel")
     .text(labelInnerText)
-
 }
