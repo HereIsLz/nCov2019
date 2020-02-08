@@ -378,14 +378,13 @@ var CountByCountry_Cured_ViewModel = 0;
 var CountByCountry_Dead_ViewModel = 0;
 
 
-var _sKey;
+var _sKey, _sDate, _sMode;
 function fetchDataViewModel(sKey, sDate, sMode) {
 
   let targetDataSet = DataRecords.filter(e => e.DateKey == DateToConsultString(sDate))
   if (targetDataSet.length == 0) return [];
   InitializeLegend(sKey, sMode);
-
-  _sKey = sKey;
+  _sKey = sKey, _sDate = sDate, _sMode = sMode;
   layer2.selectAll("image").attr('xlink:href', _sKey + 'LocationBaconSvgAnimation.svg')
   let retDataSet = [];
 
@@ -627,7 +626,29 @@ function InitializeLegend(sKey, sMode) {
   }
 }
 
-
+const InfoCanvas = d3.select("#InfoCanvas")
+InfoCanvas.append("rect").attr('width', "100%").attr('height', 1)
+  .attr('y', 104).attr("fill", "#00000030")
+InfoCanvas.append("text").attr('y', 104)
+  .text("1 月 10 日")
+  .attr("text-anchor", "start")
+  .attr("dominant-baseline", "text-before-edge")
+  .attr('font-size', 14)
+InfoCanvas.append("text").attr('y', 104)
+  .text("2020 年")
+  .attr("text-anchor", "start")
+  .attr("dominant-baseline", "text-after-edge")
+  .attr('font-size', 14)
+InfoCanvas.append("text").attr('y', 104).attr('x', '100%')
+  .text((new Date().getMonth() + 1) + " 月 " + (new Date().getDate()) + " 日 ")
+  .attr("text-anchor", "end")
+  .attr("dominant-baseline", "text-before-edge")
+  .attr('font-size', 14)
+InfoCanvas.append("text").attr('y', 104).attr('x', '100%')
+  .text("2020 年")
+  .attr("text-anchor", "end")
+  .attr("dominant-baseline", "text-after-edge")
+  .attr('font-size', 14)
 function UpdateSelectedCityInfo(selectionList) {
   let labelInnerText = "";
   if (selectionList.length > 0) {

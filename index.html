@@ -6,7 +6,6 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:400,700" rel="stylesheet" type="text/css" />
     <link href="style.css" rel="stylesheet" type="text/css" />
-    <link href="fabric.min.css" rel="stylesheet" type="text/css" />
     <script src="PreloadLists.js"></script>
     <title>2019-nCoV 疫情地图</title>
 </head>
@@ -24,9 +23,11 @@
         </svg>
     </div>
     <div class="TimelineInfoContainer">
-            <i class="ms-Icon ms-Icon--TimelineProgress" aria-hidden="true"  style="display:inline-block;"></i>
+        <div style="position: absolute;">
+            <i class="ms-Icon ms-Icon--TimelineProgress" aria-hidden="true"  style="display:inline-block;vertical-align:middle;"></i>
             <span class="InfoLabel" style="display:inline-block;">时间轴</span>
             <span class="InfoLabel" id="InfoLabel" style="display:inline-block;"></span>
+        </div>
         <svg height="100%" width="100%" id="InfoCanvas">
 
         </svg>
