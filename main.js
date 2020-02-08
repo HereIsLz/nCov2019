@@ -31,21 +31,37 @@ const maxOpacityValue = {
     AccumulatedValue: 8000,
     OriginalValue: 2000,
     ByArea: .8,
-    ByPopulation: 15
+    ByPopulation: 15,
+
+    AccumulatedValue_Legend: [10, 50, 100, 300, 500, 1000, 3000, 10000],
+    OriginalValue_Legend: [5, 10, 30, 50, 100, 200, 500, 1500],
+    ByArea_Legend: [0.001, 0.005, 0.01, 0.05, 0.1, 0.3, 0.5, 1.2],
+    ByPopulation_Legend: [0.05, 0.1, 0.25, 0.5, 1, 3, 5, 10],
+
   },
   Dead: {
     AccumulatedValue: 400,
     OriginalValue: 200,
     ByConfirmed: .6,
     ByArea: .2,
-    ByPopulation: 1
+    ByPopulation: 1,
+    AccumulatedValue_Legend: [1, 5, 10, 30, 50, 100, 300, 500],
+    OriginalValue_Legend: [1, 3, 5, 10, 20, 30, 50, 100],
+    ByConfirmed_Legend: [0.005, 0.01, 0.025, 0.05, .1, .25, .5, 1],
+    ByArea_Legend: [.00001, .00005, .001, .003, .005, .01, .03, .05],
+    ByPopulation_Legend: [0.001, 0.005, 0.01, 0.03, .05, .1, .3, 0.5]
   },
   Cured: {
     AccumulatedValue: 200,
     OriginalValue: 100,
     ByConfirmed: 1,
     ByArea: .05,
-    ByPopulation: 1
+    ByPopulation: 1,
+    AccumulatedValue_Legend: [1, 5, 10, 30, 50, 100, 300, 500],
+    OriginalValue_Legend: [1, 3, 5, 10, 20, 30, 50, 100],
+    ByConfirmed_Legend: [0.005, 0.01, 0.025, 0.05, .1, .25, .5, 1],
+    ByArea_Legend: [.00001, .00005, .001, .003, .005, .01, .03, .05],
+    ByPopulation_Legend: [0.001, 0.005, 0.01, 0.03, .05, .1, .3, 0.5],
 
   }
 }
@@ -531,17 +547,19 @@ d3.json("china-geojson-master/china.json").then(
 )
 
 
+const LegendConfig = {
+  rectWidth: 38,
+  rectHeight: 14,
+  rectPadding: 8,
+  textRectPadding: 12,
+  radius: 1.5
+}
 function InitializeLegend(sKey, sMode) {
-  console.log(sKey, sMode)
   d3.select("#LegendLayer").remove();
   let lc = d3.select("#LegendCanvas").append("g").attr("id", "LegendLayer");
-  const LegendConfig = {
-    rectWidth: 38,
-    rectHeight: 14,
-    rectPadding: 8,
-    textRectPadding: 12,
-  }
   lc.append("rect").attr("width", LegendConfig.rectWidth)
+    .attr("rx", LegendConfig.radius)
+    .attr("ry", LegendConfig.radius)
     .attr("height", LegendConfig.rectHeight)
     .attr("fill", Theme.NoneValueColor)
     .attr("opacity", Theme.noneValueOpacity)
@@ -553,24 +571,7 @@ function InitializeLegend(sKey, sMode) {
     .attr("dominant-baseline", 'middle')
 
 
-  const LegendLevel =
-    sKey == "Confirmed" ?
-      sMode == "AccumulatedValue" ? [10, 50, 100, 300, 500, 1000, 3000, 10000] :
-        sMode == "OriginalValue" ? [5, 10, 30, 50, 100, 200, 500, 1500] :
-          sMode == "ByArea" ? [0.001, 0.005, 0.01, 0.05, 0.1, 0.3, 0.5, 1.2] :
-            [0.05, 0.1, 0.25, 0.5, 1, 3, 5, 10]
-      : sKey == "Cured" ?
-        sMode == "AccumulatedValue" ? [1, 5, 10, 30, 50, 100, 300, 500] :
-          sMode == "OriginalValue" ? [1, 3, 5, 10, 20, 30, 50, 100] :
-            sMode == "ByConfirmed" ? [0.005, 0.01, 0.025, 0.05, .1, .25, .5, 1] :
-              sMode == "ByArea" ? [.00001, .00005, .001, .003, .005, .01, .03, .05] :
-                [0.001, 0.005, 0.01, 0.03, .05, .1, .3, 0.5]
-        :
-        sMode == "AccumulatedValue" ? [1, 5, 10, 30, 50, 100, 300, 500] :
-          sMode == "OriginalValue" ? [1, 3, 5, 10, 20, 30, 50, 100] :
-            sMode == "ByConfirmed" ? [0.005, 0.01, 0.025, 0.05, .1, .25, .5, 1] :
-              sMode == "ByArea" ? [.00001, .00005, .001, .003, .005, .01, .03, .05] :
-                [0.001, 0.005, 0.01, 0.03, .05, .1, .3, 0.5];
+  const LegendLevel = maxOpacityValue[sKey][sMode + "_Legend"];
 
   const OpacityOperator = e => Math.cbrt(e / maxOpacityValue[sKey][sMode])
     + Theme.noneValueOpacity;
@@ -579,6 +580,8 @@ function InitializeLegend(sKey, sMode) {
 
   LegendLevel.forEach((e) => {
     lc.append("rect").attr("width", LegendConfig.rectWidth)
+      .attr("rx", LegendConfig.radius)
+      .attr("ry", LegendConfig.radius)
       .attr("x", xOffset)
       .attr("y", LegendConfig.textRectPadding + LegendConfig.rectHeight)
       .attr("height", LegendConfig.rectHeight)
@@ -596,12 +599,16 @@ function InitializeLegend(sKey, sMode) {
   }
   )
   lc.append("rect").attr("width", LegendConfig.rectWidth)
+    .attr("rx", LegendConfig.radius)
+    .attr("ry", LegendConfig.radius)
     .attr("height", LegendConfig.rectHeight)
     .attr("fill", Theme.NoneValueColor)
     .attr("opacity", Theme.noneValueOpacity)
 
   if (sKey != "Confirmed") {
     lc.append("rect").attr("width", LegendConfig.rectWidth)
+      .attr("rx", LegendConfig.radius)
+      .attr("ry", LegendConfig.radius)
       .attr("height", LegendConfig.rectHeight)
       .attr("fill", Theme.ConfirmedColor)
       .attr("opacity", Theme.noneValueOpacity)
