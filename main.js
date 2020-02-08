@@ -19,7 +19,7 @@ const Theme = {
   DeadColor: '#4527a0',
   CuredColor: '#1e9255',
 
-  mapBaselineWidth: 0.28,
+  mapBaselineWidth: 0.44,
   mapProvlineWidth: 1.25,
   noneValueOpacity: 0.1,
 

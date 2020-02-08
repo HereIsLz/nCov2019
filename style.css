@@ -44,3 +44,4 @@ body{background-color:#f9f9fb;font-family:'roboto,Noto Sans SC';height:calc(100v
 .TimelineInfoContainer{background-color:#f9f9fb80;position:absolute;right:12px;bottom:12px;width:calc(100% - 584px);border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:120px}
 }
 .InfoLabel{font-size:14px;font-weight:700}
+svg text{font-family:'roboto'}
