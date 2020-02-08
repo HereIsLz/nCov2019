@@ -506,7 +506,7 @@ var ExemptedKey = [];
 function InitializeHighlight(e) {
 
   layer2.selectAll("image").remove();
-
+  UpdateSelectedCityInfo(e)
   ExemptedKey = [];
   e.forEach(ee => ExemptedKey.push(ee.key))
   ExemptedKey.forEach((t) => {
@@ -618,4 +618,25 @@ function InitializeLegend(sKey, sMode) {
       .attr("text-anchor", "start")
       .attr("dominant-baseline", 'middle')
   }
+}
+
+
+function UpdateSelectedCityInfo(selectionList) {
+  let labelInnerText = "";
+  if (selectionList.length > 0) {
+    labelInnerText += " (" + selectionList[0].cityName;
+    if (selectionList.length > 5) {
+      for (var i = 1; i < 5; i++)
+        labelInnerText += "、" + selectionList[i].cityName;
+      labelInnerText += "等 " + selectionList.length + " 座城市";
+    }
+    else {
+      for (var i = 1; i < selectionList.length; i++)
+        labelInnerText += "、" + selectionList[i].cityName;
+    }
+    labelInnerText += ")"
+  }
+  d3.select("#InfoLabel")
+    .text(labelInnerText)
+
 }
