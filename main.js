@@ -61,7 +61,7 @@ const maxOpacityValue = {
     OriginalValue_Legend: [1, 3, 5, 10, 20, 30, 50, 100],
     ByConfirmed_Legend: [0.005, 0.01, 0.025, 0.05, .1, .25, .5, 1],
     ByArea_Legend: [.00001, .00005, .001, .003, .005, .01, .03, .05],
-    ByPopulation_Legend: [0.001, 0.005, 0.01, 0.03, .05, .1, .3, 0.5],
+    ByPopulation_Legend: [0.001, 0.003, 0.01, 0.03, .05, .1, .3, 0.5],
 
   }
 }
@@ -616,8 +616,8 @@ function InitializeLegend(sKey, sMode) {
 
     lc.append("text").text(
       sMode != "OriginalValue" ?
-        sKey == "Cured" ? "有累计确诊但无累计治愈" : "有新增确诊但无新增治愈" :
-        sKey == "Dead" ? "有累计确诊但无累计死亡" : "有新增确诊但无新增死亡"
+        (sKey == "Cured" ? "有累计确诊但无累计治愈" : "有累计确诊但无累计死亡") :
+        (sKey == "Cured" ? "有新增确诊但无新增治愈" : "有新增确诊但无新增死亡")
     )
       .attr('y', 0.5 * LegendConfig.rectHeight + 1.3)
       .attr('x', (LegendConfig.rectWidth + LegendConfig.rectPadding) * 4)
