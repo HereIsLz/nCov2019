@@ -1,3 +1,4 @@
+
 .ItemValue{border:.5px solid #881719;border-radius:2px;color:#881719;line-height:19px}
 .HintText{margin-left:4px;opacity:.6}
 .ChoiceOptionDiasbled{color:#c2c2c4}
@@ -18,7 +19,7 @@ div::-webkit-scrollbar-track{margin-top:59px}
 #Pivot2-Tab2.is-selected{background-color:#00695c!important}
 #Pivot2-Tab2:hover{background-color:#00574e!important}
 #Pivot2-Tab2:active{background-color:#00423b!important}
-body{background-color:#f9f9fb;font-family:'roboto,Noto Sans SC';height:calc(100vh - 16px);margin:0;overflow: hidden;}
+body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;overflow:hidden}
 .ChoiceGroupLabelStyle{margin-left:28px}
 @media screen and (max-width:992px){
 .ControlContainer{margin:12px;min-width:480px;padding:16px}
@@ -31,7 +32,7 @@ body{background-color:#f9f9fb;font-family:'roboto,Noto Sans SC';height:calc(100v
 .TitleClass{display:none}
 .ms-ChoiceField{min-width:33.3%!important}
 .ms-ChoiceFieldGroup-flexContainer{min-width:100%!important}
-.TitleForSmallScreen{padding:28px;padding-bottom:40px;font-size:72px;font-weight:700;color:#881719;font-family:'roboto,Noto Sans SC'}
+.TitleForSmallScreen{padding:28px;padding-bottom:40px;font-size:72px;font-weight:700;color:#881719;font-family:roboto}
 .CanvasContainer{padding:28px;width:calc(100% - 56px);height:600px}
 .LegendContainer{padding:28px;width:calc(100% - 56px);height:40px}
 }
