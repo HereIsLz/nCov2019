@@ -26,7 +26,7 @@ const Theme = {
   mapProvlineWidth: 1.25,
   noneValueOpacity: 0.1,
 
-  svgSize: 32
+  svgSize: 40
 }
 
 const maxOpacityValue = {
@@ -691,8 +691,8 @@ function UpdateSelectedCityInfo(selectionList = _selectionList) {
   let labelInnerText = "";
   if (selectionList.length > 0) {
     labelInnerText += " (" + selectionList[0].cityName;
-    if (selectionList.length > 5) {
-      for (var i = 1; i < 5; i++)
+    if (selectionList.length > 3) {
+      for (var i = 1; i < 2; i++)
         labelInnerText += "、" + selectionList[i].cityName;
       labelInnerText += "等 " + selectionList.length + " 座城市";
 
@@ -767,19 +767,36 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
 
     }
     else if (_sMode == "OriginalValue") {
-      let dataCollected = collectKeySepecifiedData(_sKey + _sMode)
+      let dataCollected = collectKeySepecifiedData(_sKey)
       DataSorted = dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
-      charMax = 2000;
 
+      let _mx = d3.max(DataSorted);
+      charMax = _mx < 50 ?
+        50 : _mx < 100 ?
+          100 : _mx < 250 ?
+            250 : _mx < 500 ?
+              500 : _mx < 1000 ?
+                1000 : _mx < 2500 ?
+                  2500 : _mx < 5000 ?
+                    5000 : _mx < 10000 ?
+                      10000 : _mx < 20000 ?
+                        20000 : 50000
     }
     else if (_sMode == "ByConfirmed") {
       let dataCollected = collectKeySepecifiedData(_sKey + "AccumulatedValue")
       let _dataCollected = collectKeySepecifiedData("ConfirmedAccumulatedValue")
 
       let _DataSorted = _dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+
       DataSorted = dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+
       DataSorted = DataSorted.map((itm, idx) => itm / _DataSorted[idx])
-      charMax = 1;
+
+      let _mx = d3.max(DataSorted);
+      charMax = _mx < 0.25 ?
+        0.25 : _mx < 0.5 ?
+          0.5 : _mx < 0.75 ?
+            0.75 : 1
     }
     else if (_sMode == "ByArea") {
       let dataCollected = collectKeySepecifiedData(_sKey + "AccumulatedValue")
@@ -789,7 +806,13 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
         Area_sum += DataRecords[0].records.filter(e => e.key == selectedCity.key)[0].Area;
       })
       DataSorted = DataSorted.map(e => e / Area_sum);
-      charMax = _sKey == "Confirmed" ? 2 : 0.15;
+      let _mx = d3.max(DataSorted);
+      charMax = _mx < 0.1 ?
+        0.1 : _mx < 0.2 ?
+          0.2 : _mx < 0.4 ?
+            0.4 : _mx < 0.8 ?
+              0.8 : _mx < 1 ?
+                1 : 2
     }
 
     else if (_sMode == "ByPopulation") {
@@ -800,11 +823,15 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
         Area_pop += DataRecords[0].records.filter(e => e.key == selectedCity.key)[0].Population;
       })
       DataSorted = DataSorted.map(e => e / Area_pop);
-
-      charMax = _sKey == "Confirmed" ? 15 : .8;
+      let _mx = d3.max(DataSorted);
+      charMax = _mx < 0.5 ?
+        0.5 : _mx < 1 ?
+          1 : _mx < 2.5 ?
+            2.5 : _mx < 5 ?
+              5 : _mx < 10 ?
+                10 : _mx < 15 ?
+                  15 : 20
     }
-
-    console.log(DataSorted, charMax)
 
     for (var _lineIndex = 1; _lineIndex <= 4; _lineIndex++) {
       TimelineLayer.append('rect').attr('width', '100%').attr('height', 1)
@@ -828,7 +855,7 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
       .append('rect')
       .attr('x', (d, i) => ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
       .attr('width', (100 / (DataSorted.length + 8)) + "%")
-      .attr('height', d => (d / charMax) * 100)
+      .attr('height', (d) => { console.log(d, charMax); return (d / charMax) * 100 })
       .attr('rx', 1.5)
       .attr('ry', 1.5)
       .attr('y', d => (104 - (d / charMax) * 100))
@@ -871,9 +898,9 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
         console.log(dateText)
         TimelineLayer.append('text')
           .text(_sMode == "ByConfirmed" ? (Math.round(d * 10000) / 100 + "%") : Math.round(d * 10000) / 10000)
-          .attr('x', ((i + 0.4) * 100 / (DataSorted.length + 1)) + "%")
+          .attr('x', ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
           .attr('y', 80)
-          .attr('text-anchor', i > 5 ? 'end' : 'start')
+          .attr('text-anchor', (i / DataSorted.length > .5) ? 'end' : 'start')
           .attr('class', 'TimelineHint')
           .attr('font-size', 36)
           .attr('fill', Theme[_sKey + 'BorderColor'])
@@ -883,12 +910,12 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
           .text(dateText.getFullYear() + " 年 " + (dateText.getMonth() + 1) + " 月 " + dateText.getDate() + " 日 ")
           .attr('x', ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
           .attr('y', 44)
-          .attr('text-anchor', i > 5 ? 'end' : 'start')
+          .attr('text-anchor', (i / DataSorted.length > .5) ? 'end' : 'start')
           .attr('class', 'TimelineHint')
           .attr('font-size', 14)
           .attr('fill', '#000000')
           .attr('pointer-events', 'none')
-          .attr('transform', 'translate(' + (i > 5 ? -4 : 4) + ',' + 0 + ')')
+          .attr('transform', 'translate(' + (i > 5 ? -4 : 6) + ',' + 0 + ')')
         setTimeout(() => {
           selectedBar.transition().duration(80).attr('stroke-width', 2 * Theme.mapProvlineWidth)
         }, 120)
