@@ -18,6 +18,10 @@ const Theme = {
   DeadColor: '#4527a0',
   CuredColor: '#1e9255',
 
+  ConfirmedBorderColor: '#881719',
+  DeadBorderColor: '#4527a0',
+  CuredBorderColor: '#00695c',
+
   mapBaselineWidth: 0.44,
   mapProvlineWidth: 1.25,
   noneValueOpacity: 0.1,
@@ -274,10 +278,13 @@ function renderGeoPath(json) {
     .attr('class', 'city')
     .attr('d', pathMap)
     .attr('fill', 'transparent')
-
+    .attr('cursor', 'pointer')
     .attr('stroke', Theme.backgroundColor)
     .attr('stroke-width', Theme.mapBaselineWidth)
     .classed('provID-' + json.provId, true)
+    .on('click', (d) => {
+      InitializeHighlight([{ key: d.properties.id, cityName: d.properties.name }])
+    })
 
   borderCollections = layer2
     .selectAll('.centerPoints')
@@ -349,6 +356,17 @@ function getDataPrepared(selectedDate) {
   var DataRecordForDate = {
     DateKey: selectedDate,
     records: []
+  }
+  let dataInCorrespondingDate = Dataset.dataByDate.filter((d) => {
+    return d.key == selectedDate;
+  })
+  if (dataInCorrespondingDate.length == 0) {
+    console.log(DataRecords[DataRecords.length - 1], DataRecords)
+    DataRecordForDate.records = DataRecords[DataRecords.length - 1].records.map(
+      (e) => { e.Confirmed = 0, e.Dead = 0, e.Cured = 0; return e }
+    )
+    DataRecords.push(DataRecordForDate)
+    return;
   }
   jsonSet.forEach(json => {
     json.features.forEach(cityJson => {
@@ -531,13 +549,13 @@ function fetchDataViewModel(sKey, sDate, sMode) {
 }
 
 
-var ExemptedKey = [];
+
 var _selectionList;
 function InitializeHighlight(e) {
   _selectionList = e;
   layer2.selectAll("image").remove();
   UpdateSelectedCityInfo(e)
-  ExemptedKey = [];
+  var ExemptedKey = [];
   e.forEach(ee => ExemptedKey.push(ee.key))
   ExemptedKey.forEach((t) => {
     d3.select("#centerPoint-" + t)
@@ -547,6 +565,7 @@ function InitializeHighlight(e) {
   })
   return ExemptedKey;
 }
+
 
 const layer1_Prov = d3.select("#layer1_Prov")
 d3.json("china-geojson-master/china.json").then(
@@ -642,39 +661,32 @@ function InitializeLegend(sKey, sMode) {
 }
 
 const InfoCanvas = d3.select("#InfoCanvas")
+
 InfoCanvas.append("rect").attr('width', "100%").attr('height', 1)
   .attr('y', 104).attr("fill", "#00000030")
 InfoCanvas.append("text").attr('y', 104).attr("fill", "#00000030")
   .text("1 月 10 日")
   .attr("text-anchor", "start")
   .attr("dominant-baseline", "text-before-edge")
-  .attr('font-size', 14)
+  .attr('font-size', 10)
 InfoCanvas.append("text").attr('y', 104).attr("fill", "#00000030")
   .text("2020 年")
   .attr("text-anchor", "start")
   .attr("dominant-baseline", "text-after-edge")
-  .attr('font-size', 14)
+  .attr('font-size', 10)
 InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#00000030")
   .text((new Date().getMonth() + 1) + " 月 " + (new Date().getDate() - 1) + " 日 ")
   .attr("text-anchor", "end")
   .attr("dominant-baseline", "text-before-edge")
-  .attr('font-size', 14)
+  .attr('font-size', 10)
 InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#00000030")
   .text("2020 年")
   .attr("text-anchor", "end")
   .attr("dominant-baseline", "text-after-edge")
-  .attr('font-size', 14)
+  .attr('font-size', 10)
 
 
 function UpdateSelectedCityInfo(selectionList = _selectionList) {
-  InfoCanvas.selectAll("g").transition().duration(300).attr("opacity", 0);
-  setTimeout(() => {
-    UpdateSelectedCityInfo_Core(selectionList);
-  }, 120);
-}
-
-function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
-  InfoCanvas.selectAll("g").remove();
 
   let labelInnerText = "";
   if (selectionList.length > 0) {
@@ -690,41 +702,217 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
         labelInnerText += "、" + selectionList[i].cityName;
     }
     labelInnerText += ")"
+  }
+
+  d3.select("#InfoLabel")
+    .text(labelInnerText)
+
+
+  InfoCanvas.selectAll("g").transition().duration(120).attr("opacity", 0);
+  setTimeout(() => {
+    UpdateSelectedCityInfo_Core(selectionList);
+  }, 200);
+}
+
+function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
+  InfoCanvas.selectAll("g").remove();
+
+
+
+
+  if (selectionList.length > 0) {
 
 
     let TimelineLayer = InfoCanvas.append("g").attr('opacity', 0);
 
 
-    let lineChartData = [];
-    selectionList.forEach((selectedCity) => {
-      let t = [];
-      let tmpDate = startDate;
-      while (tmpDate.getTime() < endDate.getTime()) {
-        t.push(DataRecords.filter(e => e.DateKey == DateToConsultString(tmpDate))[0].records
-          .filter(e => e.key == selectedCity.key)[0][_sKey + (_sMode == "OriginalValue" ? "" : _sMode)])
-        tmpDate = new Date(tmpDate.getTime() + 86400000);
-      }
-      lineChartData.push(t);
-    })
 
-    let lineChartData_Sum = lineChartData.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
 
-    let charMax = d3.max(lineChartData_Sum) / 90;
-    charMax = charMax > 0.2 ? charMax : 0.2;
 
-    let boundingWidth = document.getElementById("InfoCanvas").getBoundingClientRect().width;
+    function collectKeySepecifiedData(_key) {
+      let lineChartData = [];
+      selectionList.forEach((selectedCity) => {
+        let t = [];
+        let tmpDate = startDate;
+        while (tmpDate.getTime() < endDate.getTime()) {
+          t.push(DataRecords.filter(e => e.DateKey == DateToConsultString(tmpDate))[0].records
+            .filter(e => e.key == selectedCity.key)[0][_key])
+          tmpDate = new Date(tmpDate.getTime() + 86400000);
+        }
+        lineChartData.push(t);
+      })
+      return lineChartData;
+    }
 
+
+
+    let DataSorted = []
+    let charMax = 1;
+
+    if (_sMode == "AccumulatedValue") {
+      let dataCollected = collectKeySepecifiedData(_sKey + _sMode)
+      DataSorted = dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]));
+      let _mx = d3.max(DataSorted);
+
+      charMax = _mx < 50 ?
+        50 : _mx < 100 ?
+          100 : _mx < 250 ?
+            250 : _mx < 500 ?
+              500 : _mx < 1000 ?
+                1000 : _mx < 2500 ?
+                  2500 : _mx < 5000 ?
+                    5000 : _mx < 10000 ?
+                      10000 : _mx < 20000 ?
+                        20000 : 50000
+
+    }
+    else if (_sMode == "OriginalValue") {
+      let dataCollected = collectKeySepecifiedData(_sKey + _sMode)
+      DataSorted = dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+      charMax = 2000;
+
+    }
+    else if (_sMode == "ByConfirmed") {
+      let dataCollected = collectKeySepecifiedData(_sKey + "AccumulatedValue")
+      let _dataCollected = collectKeySepecifiedData("ConfirmedAccumulatedValue")
+
+      let _DataSorted = _dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+      DataSorted = dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+      DataSorted = DataSorted.map((itm, idx) => itm / _DataSorted[idx])
+      charMax = 1;
+    }
+    else if (_sMode == "ByArea") {
+      let dataCollected = collectKeySepecifiedData(_sKey + "AccumulatedValue")
+      DataSorted = dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+      let Area_sum = 0;
+      selectionList.forEach((selectedCity) => {
+        Area_sum += DataRecords[0].records.filter(e => e.key == selectedCity.key)[0].Area;
+      })
+      DataSorted = DataSorted.map(e => e / Area_sum);
+      charMax = _sKey == "Confirmed" ? 2 : 0.15;
+    }
+
+    else if (_sMode == "ByPopulation") {
+      let dataCollected = collectKeySepecifiedData(_sKey + "AccumulatedValue")
+      DataSorted = dataCollected.reduce((e, t) => e.map((itm, idx) => itm + t[idx]))
+      let Area_pop = 0;
+      selectionList.forEach((selectedCity) => {
+        Area_pop += DataRecords[0].records.filter(e => e.key == selectedCity.key)[0].Population;
+      })
+      DataSorted = DataSorted.map(e => e / Area_pop);
+
+      charMax = _sKey == "Confirmed" ? 15 : .8;
+    }
+
+    console.log(DataSorted, charMax)
+
+    for (var _lineIndex = 1; _lineIndex <= 4; _lineIndex++) {
+      TimelineLayer.append('rect').attr('width', '100%').attr('height', 1)
+        .attr('fill', '#00000030')
+        .attr('y', 105 - _lineIndex * 20)
+      TimelineLayer.append('text').text(Math.round((charMax * _lineIndex) * 20) / 100)
+        .attr('fill', '#00000080')
+        .attr('y', 106.3 - _lineIndex * 20)
+        .attr('text-anchor', 'start')
+        .attr('dominant-baseline', 'middle')
+        .attr('font-size', 10)
+    }
+
+    //let boundingWidth = document.getElementById("InfoCanvas").getBoundingClientRect().width;
+
+    TimelineLayer.selectAll("defs").remove();
+    let TimelineLayer_GrdtDefs = TimelineLayer.append("defs");
+    TimelineLayer.selectAll(".TimelineBar")
+      .data(DataSorted)
+      .enter()
+      .append('rect')
+      .attr('x', (d, i) => ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
+      .attr('width', (100 / (DataSorted.length + 8)) + "%")
+      .attr('height', d => (d / charMax) * 100)
+      .attr('rx', 1.5)
+      .attr('ry', 1.5)
+      .attr('y', d => (104 - (d / charMax) * 100))
+      .attr("opacity", d => d != 0)
+      .attr("stroke", Theme[_sKey + "BorderColor"])
+      .attr("stroke-width", Theme.mapBaselineWidth)
+      .attr('id', (d, i) => 'tb' + i)
+      .attr("fill", (d, i) => {
+        let grdt = TimelineLayer_GrdtDefs.append("linearGradient")
+          .attr("id", "Tbg" + i)
+          .attr("x1", "0%")
+          .attr("y1", "100%")
+          .attr("x2", "0%")
+          .attr("y2", "0%")
+        grdt.append("stop")
+          .attr("offset", "0%")
+          .attr("stop-color", Theme[_sKey + "Color"])
+          .attr("stop-opacity", 0.02)
+        grdt.append("stop")
+          .attr("offset", "100%")
+          .attr("stop-color", Theme[_sKey + "Color"])
+          .attr("stop-opacity", 0.03 + 0.5 * d / maxOpacityValue[_sKey][_sMode])
+
+        return "url(#Tbg" + i + ")"
+      })
+    TimelineLayer.selectAll(".TimelineBar")
+      .data(DataSorted)
+      .enter()
+      .append('rect')
+      .attr('width', (100 / (DataSorted.length + 8)) + "%")
+      .attr('height', 100)
+      .attr('y', 4)
+      .attr('opacity', 0)
+      .attr('x', (d, i) => ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
+      .on('mouseover', (d, i) => {
+
+
+        let selectedBar = d3.select("#tb" + i);
+        let dateText = new Date(startDate.getTime() + 86400000 * i)
+        console.log(dateText)
+        TimelineLayer.append('text')
+          .text(_sMode == "ByConfirmed" ? (Math.round(d * 10000) / 100 + "%") : Math.round(d * 10000) / 10000)
+          .attr('x', ((i + 0.4) * 100 / (DataSorted.length + 1)) + "%")
+          .attr('y', 80)
+          .attr('text-anchor', i > 5 ? 'end' : 'start')
+          .attr('class', 'TimelineHint')
+          .attr('font-size', 36)
+          .attr('fill', Theme[_sKey + 'BorderColor'])
+          .attr('font-weight', 700)
+          .attr('pointer-events', 'none')
+        TimelineLayer.append('text')
+          .text(dateText.getFullYear() + " 年 " + (dateText.getMonth() + 1) + " 月 " + dateText.getDate() + " 日 ")
+          .attr('x', ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
+          .attr('y', 44)
+          .attr('text-anchor', i > 5 ? 'end' : 'start')
+          .attr('class', 'TimelineHint')
+          .attr('font-size', 14)
+          .attr('fill', '#000000')
+          .attr('pointer-events', 'none')
+          .attr('transform', 'translate(' + (i > 5 ? -4 : 4) + ',' + 0 + ')')
+        setTimeout(() => {
+          selectedBar.transition().duration(80).attr('stroke-width', 2 * Theme.mapProvlineWidth)
+        }, 120)
+      })
+      .on('mouseout', (d, i) => {
+        TimelineLayer.selectAll(".TimelineHint").remove();
+        //d3.select("#TimelineTextAccent").text('');
+        setTimeout(() => {
+          d3.select("#tb" + i).transition().duration(120).attr('stroke-width', Theme.mapBaselineWidth);
+        }, 120)
+      })
+
+    /*
     var pathGenerator = d3.line()
-      .x(function (d, i) { return (i + 0.5) * (boundingWidth / lineChartData_Sum.length); }) // set the x values for the line generator
+      .x(function (d, i) { return (i + 0.5) * (boundingWidth / DataSorted.length); }) // set the x values for the line generator
       .y(function (d) { return 105 - d / charMax; }) // set the y values for the line generator 
       .curve(d3.curveCardinal)
 
     TimelineLayer
       .selectAll(".LineChartNode")
-      .data(lineChartData_Sum)
+      .data(DataSorted)
       .enter()
       .append('circle')
-      .attr('cx', (d, i) => (100 / lineChartData_Sum.length * (i + 0.5)) + '%')
+      .attr('cx', (d, i) => (100 / DataSorted.length * (i + 0.5)) + '%')
       .attr("cy", d => (105 - (d / charMax)))
       .attr('r', 5)
       .attr('fill', Theme[_sKey + "Color"])
@@ -732,7 +920,7 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
       .attr('stroke-width', Theme.mapProvlineWidth)
 
     TimelineLayer.append('path')
-      .attr('d', pathGenerator(lineChartData_Sum))
+      .attr('d', pathGenerator(DataSorted))
       .attr('fill', 'none')
       .attr('stroke', Theme[_sKey + "Color"])
       .attr('stroke-width', Theme.mapProvlineWidth)
@@ -755,8 +943,8 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
 
       })
     }
+    */
     TimelineLayer.transition().duration(200).attr('opacity', 1);
   }
-  d3.select("#InfoLabel")
-    .text(labelInnerText)
+
 }

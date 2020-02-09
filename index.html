@@ -13,21 +13,35 @@
 <body>
     <div class="TitleForSmallScreen">2019-nCoV 疫情地图</div>
     <svg class="CanvasContainer">
+        <defs>
+            <filter id="Gaussian_Blur">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+            </filter>
+        </defs>
         <g id="layer1" />
-        <g id="layer1_Prov" />
-        <g id="layer2" />
-        <g id="legend" />
+        <g id="layer1_Prov" pointer-events="none" />
+        <g id="layer2" pointer-events="none" />
+        <g id="legend" pointer-events="none" />
     </svg>
     <div class="LegendContainer">
         <svg height="100%" width="100%" id="LegendCanvas">
         </svg>
     </div>
     <div class="TimelineInfoContainer">
-        <div style="position: absolute;">
-            <i class="ms-Icon ms-Icon--TimelineProgress" aria-hidden="true"  style="display:inline-block;vertical-align:middle;"></i>
-            <span class="TimeLineLabel InfoLabel" style="display:inline-block;">时间轴</span>
-            <span class="TimeLineLabel" id="InfoLabel" style="display:inline-block;"></span>
+        <div>
+            <div style="position: absolute;">
+
+                <span class="TimeLineLabel InfoLabel" style="display:inline-block;">时间轴</span>
+                <span class="TimeLineLabel" id="InfoLabel" style="display:inline-block;"></span>
+
+            </div>
+            <div style="position: absolute;right:0">
+                <div class="TimeLineLabel" style="margin:8px 0 -4px 2px" id="TimelineTextTiny"></div>
+                <div style="font-weight:700;font-size:36px;color:#881719;"
+                    id="TimelineTextAccent"></div>
+            </div>
         </div>
+
         <svg height="100%" width="100%" id="InfoCanvas">
 
         </svg>
