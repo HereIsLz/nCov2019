@@ -975,3 +975,11 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
   }
 
 }
+
+var _isPanelExpanded = false;
+d3.select(".DragToExpandControlPointerEvents").on("click", () => {
+  d3.select(".LinkingCompareContainer").classed("LinkingCompareContainer_Expanded", !_isPanelExpanded)
+
+  d3.select(".LinkingCompareContainer").classed("LinkingCompareContainer_Compressed", _isPanelExpanded)
+  _isPanelExpanded = !_isPanelExpanded;
+})
