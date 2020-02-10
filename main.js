@@ -807,12 +807,18 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
       })
       DataSorted = DataSorted.map(e => e / Area_sum);
       let _mx = d3.max(DataSorted);
-      charMax = _mx < 0.1 ?
-        0.1 : _mx < 0.2 ?
-          0.2 : _mx < 0.4 ?
-            0.4 : _mx < 0.8 ?
-              0.8 : _mx < 1 ?
-                1 : 2
+
+      charMax = _mx < 0.0005 ?
+        0.0005 : _mx < 0.001 ?
+          0.001 : _mx < 0.005 ?
+            0.005 : _mx < 0.01 ?
+              0.01 : _mx < 0.05 ?
+                0.05 : _mx < 0.1 ?
+                  0.1 : _mx < 0.2 ?
+                    0.2 : _mx < 0.4 ?
+                      0.4 : _mx < 0.8 ?
+                        0.8 : _mx < 1 ?
+                          1 : 2
     }
 
     else if (_sMode == "ByPopulation") {
@@ -824,20 +830,31 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
       })
       DataSorted = DataSorted.map(e => e / Area_pop);
       let _mx = d3.max(DataSorted);
-      charMax = _mx < 0.5 ?
-        0.5 : _mx < 1 ?
-          1 : _mx < 2.5 ?
-            2.5 : _mx < 5 ?
-              5 : _mx < 10 ?
-                10 : _mx < 15 ?
-                  15 : 20
+      charMax = _mx < 0.001 ?
+        0.001 : _mx < 0.005 ?
+          0.005 : _mx < 0.01 ?
+            0.01 : _mx < 0.05 ?
+              0.05 : _mx < 0.1 ?
+                0.1 : _mx < 0.2 ?
+                  0.2 : _mx < 0.4 ?
+                    0.4 : _mx < 0.8 ?
+                      0.8 : _mx < 1 ?
+                        1 : _mx < 2.5 ?
+                          2.5 : _mx < 5 ?
+                            5 : _mx < 10 ?
+                              10 : _mx < 15 ?
+                                15 : 20
     }
 
     for (var _lineIndex = 1; _lineIndex <= 4; _lineIndex++) {
       TimelineLayer.append('rect').attr('width', '100%').attr('height', 1)
         .attr('fill', '#00000030')
         .attr('y', 105 - _lineIndex * 20)
-      TimelineLayer.append('text').text(Math.round((charMax * _lineIndex) * 20) / 100)
+      TimelineLayer.append('text').text(
+        _sMode != "ByConfirmed" ?
+          Math.round((charMax * _lineIndex) * 2000) / 10000 :
+          Math.round(((charMax * _lineIndex) * 2000)) / 100 + "%"
+      )
         .attr('fill', '#00000080')
         .attr('y', 106.3 - _lineIndex * 20)
         .attr('text-anchor', 'start')
@@ -983,3 +1000,10 @@ d3.select(".DragToExpandControlPointerEvents").on("click", () => {
   d3.select(".LinkingCompareContainer").classed("LinkingCompareContainer_Compressed", _isPanelExpanded)
   _isPanelExpanded = !_isPanelExpanded;
 })
+
+
+function renderLineMap(selectionList = _selectionList) {
+  const axis_xOffest_percent = 100 / 3;
+  const maxLength_percent = 25;
+  const lengthCalculator = (e) => Math.cbrt(e) * 2;
+}
