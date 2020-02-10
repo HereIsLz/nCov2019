@@ -21,7 +21,7 @@ div::-webkit-scrollbar-track{margin-top:59px}
 body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;width:calc(100%)}
 .ChoiceGroupLabelStyle{margin-left:28px}
 @media screen and (max-width:1000px){
-.ControlContainer{margin:12px;min-width:480px;padding:16px}
+.ControlContainer{margin:12px 12px 0 12px;min-width:480px;padding:16px}
 #Pivot1-Tab1{width:33%!important}
 #Pivot1-Tab0{width:33%!important}
 #Pivot1-Tab2{width:33%!important}
@@ -30,12 +30,15 @@ body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margi
 #Pivot2-Tab2{width:33%!important}
 .TitleClass{display:none}
 .ms-ChoiceFieldGroup-flexContainer{min-width:100%!important}
-.TitleForSmallScreen{padding:28px;padding-bottom:40px;font-size:72px;font-weight:700;color:#881719;font-family:roboto}
-.CanvasContainer{padding:28px;width:calc(100% - 56px);height:600px}
+.TitleForSmallScreen{padding:28px;padding-bottom:40px;font-size:32px;font-weight:700;color:#881719;font-family:roboto}
+.CanvasContainer{width:100%;height:300px}
 .LegendContainer{padding:28px;width:calc(100% - 56px);height:40px}
-.ControlContainer{width:calc(100% - 56px);padding:16px;min-width:calc(100% - 56px)!important}
+.ControlContainer{width:calc(100% - 56px);padding:16px 16px 0 16px;min-width:calc(100% - 56px)!important}
 .ms-ChoiceField{display:initial!important}
 .ms-ChoiceField-wrapper{margin-top:8px!important;margin-bottom:8px!important}
+body{overflow-x:hidden}
+.TimelineInfoContainer{margin:12px 12px 0 12px;padding:16px 16px 0 16px}
+.LinkingCompareContainer{display:none}
 }
 @keyframes expander{
 to{height:calc(100vh - 58px)}
