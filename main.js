@@ -694,6 +694,7 @@ function UpdateSelectedCityInfo(selectionList = _selectionList) {
     labelInnerText += '</span>' + TimelineLabelText[_sKey][_sMode] + ")"
   }
   else {
+
     labelInnerText = "在<span style=\"color:" + Theme[_sKey + "BorderColor"] +
       ";font-weight:700\">地图</span>或<span style=\"color:" + Theme[_sKey + "BorderColor"] + ";font-weight:700\">列表</span>中选择城市集合以显示"
   }
@@ -708,14 +709,10 @@ function UpdateSelectedCityInfo(selectionList = _selectionList) {
 
 function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
   InfoCanvas.selectAll("g").remove();
-
-
-
+  let TimelineLayer = InfoCanvas.append("g").attr('opacity', 0);
 
   if (selectionList.length > 0) {
 
-
-    let TimelineLayer = InfoCanvas.append("g").attr('opacity', 0);
     TimelineLayer.append("rect").attr('width', "100%").attr('height', 1)
       .attr('y', 104).attr("fill", "#000000")
       .attr('opacity', .1)
@@ -1009,7 +1006,11 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
     */
     TimelineLayer.transition().duration(200).attr('opacity', 1);
   }
-
+  else {
+    TimelineLayer.append("image").attr('xlink:href', 'Guidance_Timeline.svg')
+      .attr('transform', 'translate(' + 36 + ',' + 26 + ')')
+    TimelineLayer.attr('opacity', 1);
+  }
 }
 
 var _isPanelExpanded = false;
