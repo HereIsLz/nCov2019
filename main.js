@@ -872,7 +872,7 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
       .append('rect')
       .attr('x', (d, i) => ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
       .attr('width', (100 / (DataSorted.length + 8)) + "%")
-      .attr('height', (d) => { console.log(d, charMax); return (d / charMax) * 100 })
+      .attr('height', d => (d / charMax) * 100)
       .attr('rx', 1.5)
       .attr('ry', 1.5)
       .attr('y', d => (104 - (d / charMax) * 100))
@@ -912,7 +912,6 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
 
         let selectedBar = d3.select("#tb" + i);
         let dateText = new Date(startDate.getTime() + 86400000 * i)
-        console.log(dateText)
         TimelineLayer.append('text')
           .text(_sMode == "ByConfirmed" ? (Math.round(d * 10000) / 100 + "%") : Math.round(d * 10000) / 10000)
           .attr('x', ((i + 0.5) * 100 / (DataSorted.length + 1)) + "%")
@@ -1006,4 +1005,45 @@ function renderLineMap(selectionList = _selectionList) {
   const axis_xOffest_percent = 100 / 3;
   const maxLength_percent = 25;
   const lengthCalculator = (e) => Math.cbrt(e) * 2;
+  const LineMapCanvas = d3.select("LinkCanvas");
+  const __sKeyList = ["Confirmed", "Dead", "Cured"]
+
+  var LineMapList = [];
+  if (_sMode == "OriginalValue")
+    selectionList.forEach((selectedCity) => {
+      LineMapList.push(
+        __sKeyList.map(__sKey =>
+          DataRecords.filter(e => e.DateKey == DateToConsultString(_sDate))[0].records
+            .filter(e => e.key == selectedCity.key)[0][__sKey]
+        ).concat(
+          selectedCity.cityName)
+      )
+    })
+  else if (_sMode == "ByConfirmed")
+    selectionList.forEach((selectedCity) => {
+      LineMapList.push(
+        __sKeyList.map(__sKey =>
+          DataRecords.filter(e => e.DateKey == DateToConsultString(_sDate))[0].records
+            .filter(e => e.key == selectedCity.key)[0][__sKey + "AccumulatedValue"]
+        ).concat(
+          selectedCity.cityName)
+      )
+    })
+  else
+    selectionList.forEach((selectedCity) => {
+      LineMapList.push(
+        __sKeyList.map(__sKey =>
+          DataRecords.filter(e => e.DateKey == DateToConsultString(_sDate))[0].records
+            .filter(e => e.key == selectedCity.key)[0][__sKey + _sMode]
+        ).concat(
+          selectedCity.cityName)
+      )
+    })
+  let __sortedList = ([0, 1, 2]).map(
+    (idx) => {
+      var tmpArray = LineMapList.slice(0)
+      tmpArray.sort((a, b) => b[idx] - a[idx]);
+      return tmpArray;
+    })
+  console.log(__sortedList)
 }

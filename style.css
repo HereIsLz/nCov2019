@@ -19,7 +19,7 @@ div::-webkit-scrollbar-track{margin-top:59px}
 #Pivot2-Tab2.is-selected{background-color:#00695c!important}
 #Pivot2-Tab2:hover{background-color:#00574e!important}
 #Pivot2-Tab2:active{background-color:#00423b!important}
-body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;overflow:hidden}
+body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;width:calc(100%)}
 .ChoiceGroupLabelStyle{margin-left:28px}
 @media screen and (max-width:992px){
 .ControlContainer{margin:12px;min-width:480px;padding:16px}
