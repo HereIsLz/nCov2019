@@ -34,18 +34,18 @@ const TimelineLabelText = {
     ByPopulation: "的累计确诊人口比例",
   },
   Dead: {
-    AccumulatedValue: "的累计确诊人数",
-    OriginalValue: "的每日新增确诊人数",
+    AccumulatedValue: "的累计死亡人数",
+    OriginalValue: "的每日新增死亡人数",
     ByConfirmed: "的死亡确诊比",
-    ByArea: "的累计确诊面积密度",
-    ByPopulation: "的累计确诊人口比例",
+    ByArea: "的累计死亡面积密度",
+    ByPopulation: "的累计死亡人口比例",
   },
   Cured: {
-    AccumulatedValue: "的累计确诊人数",
-    OriginalValue: "的每日新增确诊人数",
+    AccumulatedValue: "的累计治愈人数",
+    OriginalValue: "的每日新增治愈人数",
     ByConfirmed: "的治愈确诊比",
-    ByArea: "的累计确诊面积密度",
-    ByPopulation: "的累计确诊人口比例",
+    ByArea: "的累计治愈面积密度",
+    ByPopulation: "的累计治愈人口比例",
   }
 }
 const maxOpacityValue = {
@@ -296,7 +296,8 @@ function renderGeoPath(json) {
     .attr('stroke-width', Theme.mapBaselineWidth)
     .classed('provID-' + json.provId, true)
     .on('click', (d) => {
-      InitializeHighlight([{ key: d.properties.id, cityName: d.properties.name }])
+      _selectionList = [{ key: d.properties.id, cityName: d.properties.name }];
+      InitializeHighlight(_selectionList)
     })
 
   borderCollections = layer2
@@ -1009,7 +1010,7 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
   else {
     TimelineLayer.append("image").attr('xlink:href', 'Guidance_Timeline.svg')
       .attr('transform', 'translate(' + 36 + ',' + 26 + ')')
-    TimelineLayer.attr('opacity', 1);
+    TimelineLayer.transition().duration(200).attr('opacity', 1);
   }
 }
 

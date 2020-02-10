@@ -76,7 +76,7 @@ to{height:120px}
 .CanvasContainer{width:820px;height:600px;margin-left:calc(50% - 148px);margin-top:calc(49vh - 340px)}
 .ControlContainer{background-color:#f9f9fba0;position:absolute;left:12px;top:12px;width:480px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:calc(100vh - 58px)}
 .TimelineInfoContainer{background-color:#f9f9fba0;position:absolute;left:538px;bottom:12px;width:360px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:120px}
-.LinkingCompareContainer{background-color:#f9f9fbd8;position:absolute;right:12px;bottom:12px;width:calc(100% - 990px);border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:120px}
+.LinkingCompareContainer{background-color:#f9f9fbb8;position:absolute;right:12px;bottom:12px;width:calc(100% - 990px);border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:120px}
 .LinkingCompareContainer_Expanded{animation:expander .5s;-moz-animation:expander .5s;-webkit-animation:expander .5s;-o-animation:expander .5s;animation-fill-mode:forwards}
 .LinkingCompareContainer_Compressed{animation:expander- .5s;-moz-animation:expander- .5s;-webkit-animation:expander- .5s;-o-animation:expander- .5s;animation-fill-mode:forwards}
 }
