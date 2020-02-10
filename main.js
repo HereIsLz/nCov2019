@@ -28,24 +28,24 @@ const Theme = {
 }
 const TimelineLabelText = {
   Confirmed: {
-    AccumulatedValue: "的累计确诊人数",
-    OriginalValue: "的每日新增确诊人数",
-    ByArea: "的累计确诊面积密度",
-    ByPopulation: "的累计确诊人口比例",
+    AccumulatedValue: "的<span style=\"font-weight:700;color:#881719\">累计确诊</span>人数",
+    OriginalValue: "的<span style=\"font-weight:700;color:#881719\">每日新增确诊</span>人数",
+    ByArea: "的<span style=\"font-weight:700;color:#881719\">累计确诊</span>面积密度",
+    ByPopulation: "的<span style=\"font-weight:700;color:#881719\">累计确诊</span>人口比例",
   },
   Dead: {
-    AccumulatedValue: "的累计死亡人数",
-    OriginalValue: "的每日新增死亡人数",
-    ByConfirmed: "的死亡确诊比",
-    ByArea: "的累计死亡面积密度",
-    ByPopulation: "的累计死亡人口比例",
+    AccumulatedValue: "的<span style=\"font-weight:700;color:#4527a0\">累计死亡</span>人数",
+    OriginalValue: "的<span style=\"font-weight:700;color:#4527a0\">每日新增死亡</span>人数",
+    ByConfirmed: "的<span style=\"font-weight:700;color:#4527a0\">死亡确诊比</span>",
+    ByArea: "的<span style=\"font-weight:700;color:#4527a0\">累计死亡</span>面积密度",
+    ByPopulation: "的<span style=\"font-weight:700;color:#4527a0\">累计死亡</span>人口比例",
   },
   Cured: {
-    AccumulatedValue: "的累计治愈人数",
-    OriginalValue: "的每日新增治愈人数",
-    ByConfirmed: "的治愈确诊比",
-    ByArea: "的累计治愈面积密度",
-    ByPopulation: "的累计治愈人口比例",
+    AccumulatedValue: "的<span style=\"font-weight:700;color:#00695c\">累计治愈</span>人数",
+    OriginalValue: "的<span style=\"font-weight:700;color:#00695c\">每日新增治愈</span>人数",
+    ByConfirmed: "的<span style=\"font-weight:700;color:#00695c\">治愈确诊比</span>",
+    ByArea: "的<span style=\"font-weight:700;color:#00695c\">累计治愈</span>面积密度",
+    ByPopulation: "的<span style=\"font-weight:700;color:#00695c\">累计治愈</span>人口比例",
   }
 }
 const maxOpacityValue = {
@@ -680,8 +680,7 @@ function UpdateSelectedCityInfo(selectionList = _selectionList) {
 
   let labelInnerText = "";
   if (selectionList.length > 0) {
-    labelInnerText += " (<span style=\"color:" + Theme[_sKey + "BorderColor"] +
-      ";font-weight:700\">" + selectionList[0].cityName;
+    labelInnerText += " (" + selectionList[0].cityName;
     if (selectionList.length > 3) {
       for (var i = 1; i < 2; i++)
         labelInnerText += "、" + selectionList[i].cityName;
@@ -692,7 +691,7 @@ function UpdateSelectedCityInfo(selectionList = _selectionList) {
       for (var i = 1; i < selectionList.length; i++)
         labelInnerText += "、" + selectionList[i].cityName;
     }
-    labelInnerText += '</span>' + TimelineLabelText[_sKey][_sMode] + ")"
+    labelInnerText += TimelineLabelText[_sKey][_sMode] + ")"
   }
   else {
 
@@ -1029,8 +1028,16 @@ const LineMapCanvas = d3.select("#LinkCanvas");
 
 
 function renderLineMap(selectionList = _selectionList) {
-  const boundingWidth = document.getElementById("LinkCanvas").getBoundingClientRect().width;
 
+  const boundingWidth = document.getElementById("LinkCanvas").getBoundingClientRect().width;
+  d3.select("#LinkCanvasLayer").remove();
+  const LinkCanvasLayer = LineMapCanvas.append("g").attr("id", "LinkCanvasLayer")
+
+  if (selectionList.length == 0) {
+    LinkCanvasLayer.append("image").attr('xlink:href', 'Guidance_Timeline.svg')
+      .attr('transform', 'translate(' + (boundingWidth / 2 - 150) + ',' + 2 + ')')
+    return;
+  }
   const barHeight = 12;
   const barPadding = 4;
   const axis_xOffest = [(Math.round(boundingWidth * 28) / 100),
@@ -1047,8 +1054,7 @@ function renderLineMap(selectionList = _selectionList) {
 
 
 
-  d3.select("#LinkCanvasLayer").remove();
-  const LinkCanvasLayer = LineMapCanvas.append("g").attr("id", "LinkCanvasLayer")
+
   const __sKeyList = ["Confirmed", "Dead", "Cured"]
 
   var LineMapList = [];

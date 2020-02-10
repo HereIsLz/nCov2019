@@ -84,5 +84,9 @@ to{height:120px}
 .InfoLabel{font-weight:700}
 .TimeLineLabel{font-size:14px}
 svg text{font-family:roboto}
+.ms-DetailsHeader-check>.ms-Check>.ms-Check-circle{color:#000000b0}
+.ms-Check-checkHost{opacity:1}
+.ms-Check>.ms-Check-circle{color:#00000030}
+.ms-Check.is-checked>.ms-Check-circle{color:#f9f9fb!important}
 .DragToExpandControlPointerEvents{position:absolute;height:40px;margin:-16px;width:100%;cursor:pointer}
 .DragToExpandControl{position:absolute;margin-left:calc(50% - 52px);width:72px;height:3px;background-color:#00000018;border-radius:4px;border:1px solid #00000030;margin-top:-10px}
