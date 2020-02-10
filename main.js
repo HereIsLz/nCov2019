@@ -672,33 +672,7 @@ function InitializeLegend(sKey, sMode) {
 
 const InfoCanvas = d3.select("#InfoCanvas")
 
-InfoCanvas.append("rect").attr('width', "100%").attr('height', 1)
-  .attr('y', 104).attr("fill", "#000000")
-  .attr('opacity', .1)
-InfoCanvas.append("text").attr('y', 104).attr("fill", "#000000")
-  .attr('opacity', .1)
-  .text("1 月 10 日")
-  .attr("text-anchor", "start")
-  .attr("dominant-baseline", "text-before-edge")
-  .attr('font-size', 10)
-InfoCanvas.append("text").attr('y', 104).attr("fill", "#000000")
-  .attr('opacity', .1)
-  .text("2020 年")
-  .attr("text-anchor", "start")
-  .attr("dominant-baseline", "text-after-edge")
-  .attr('font-size', 10)
-InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#000000")
-  .attr('opacity', .1)
-  .text((new Date().getMonth() + 1) + " 月 " + (new Date().getDate() - 1) + " 日 ")
-  .attr("text-anchor", "end")
-  .attr("dominant-baseline", "text-before-edge")
-  .attr('font-size', 10)
-InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#000000")
-  .attr('opacity', .1)
-  .text("2020 年")
-  .attr("text-anchor", "end")
-  .attr("dominant-baseline", "text-after-edge")
-  .attr('font-size', 10)
+
 
 
 function UpdateSelectedCityInfo(selectionList = _selectionList) {
@@ -742,7 +716,33 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
 
 
     let TimelineLayer = InfoCanvas.append("g").attr('opacity', 0);
-
+    TimelineLayer.append("rect").attr('width', "100%").attr('height', 1)
+      .attr('y', 104).attr("fill", "#000000")
+      .attr('opacity', .1)
+    TimelineLayer.append("text").attr('y', 104).attr("fill", "#000000")
+      .attr('opacity', .5)
+      .text("1 月 10 日")
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", "text-before-edge")
+      .attr('font-size', 10)
+    TimelineLayer.append("text").attr('y', 104).attr("fill", "#000000")
+      .attr('opacity', .5)
+      .text("2020 年")
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", "text-after-edge")
+      .attr('font-size', 10)
+    TimelineLayer.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#000000")
+      .attr('opacity', .5)
+      .text((new Date().getMonth() + 1) + " 月 " + (new Date().getDate() - 1) + " 日 ")
+      .attr("text-anchor", "end")
+      .attr("dominant-baseline", "text-before-edge")
+      .attr('font-size', 10)
+    TimelineLayer.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#000000")
+      .attr('opacity', .5)
+      .text("2020 年")
+      .attr("text-anchor", "end")
+      .attr("dominant-baseline", "text-after-edge")
+      .attr('font-size', 10)
 
 
 
