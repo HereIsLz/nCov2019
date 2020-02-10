@@ -21,6 +21,7 @@ div::-webkit-scrollbar-track{margin-top:59px}
 body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;width:calc(100%)}
 .ChoiceGroupLabelStyle{margin-left:28px}
 @media screen and (max-width:1000px){
+.SouthSeaSvgContainer{border:1px solid #00000030;padding:4px;width:40px;height:50px;margin-top:-90px;margin-bottom:12px;margin-left:calc(100% - 60px)}
 .ControlContainer{margin:12px 12px 0 12px;min-width:480px;padding:16px}
 #Pivot1-Tab1{width:33%!important}
 #Pivot1-Tab0{width:33%!important}
@@ -69,6 +70,7 @@ from{height:calc(100vh - 58px)}
 to{height:120px}
 }
 @media screen and (min-width:1000px){
+.SouthSeaSvgContainer{border:1px solid #00000030;padding:4px;position:absolute;right:12px;bottom:178px;width:80px;height:100px;border-radius:3px}
 #LinkCanvas{margin-top:28px}
 .LegendContainer{background-color:#f9f9fba0;position:absolute;left:538px;top:12px;width:360px;min-width:360px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:40px}
 .TitleClass{font-size:36px;font-weight:700;color:#881719}
