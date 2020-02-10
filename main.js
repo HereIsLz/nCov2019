@@ -5,7 +5,6 @@ const endDate = new Date(2020, (new Date()).getMonth(), (new Date()).getDate())
 const Theme = {
   backgroundColor: '#f9f9fb',
   secureAccentColor: '#1565c0',
-
   accentColor: '#d03218',
   sumAccentColor: '#d03218',
   deadAccentColor: '#4527a0',
@@ -13,22 +12,42 @@ const Theme = {
   NoneValueColor: '#70727e',
   ByConfirm_DividedByZeroColor: '#666666',//比例下
   ByConfirm_ZeroColor: '#d03218',
-
   ConfirmedColor: '#d03218',
   DeadColor: '#4527a0',
   CuredColor: '#1e9255',
-
   ConfirmedBorderColor: '#881719',
   DeadBorderColor: '#4527a0',
   CuredBorderColor: '#00695c',
-
+  ConfirmedLightColor: '#f4e1df',
+  DeadLightColor: '#e3dff0',
+  CuredLightColor: '#deece7',
   mapBaselineWidth: 0.44,
   mapProvlineWidth: 1.25,
   noneValueOpacity: 0.1,
-
   svgSize: 40
 }
-
+const TimelineLabelText = {
+  Confirmed: {
+    AccumulatedValue: "的累计确诊人数",
+    OriginalValue: "的每日新增确诊人数",
+    ByArea: "的累计确诊面积密度",
+    ByPopulation: "的累计确诊人口比例",
+  },
+  Dead: {
+    AccumulatedValue: "的累计确诊人数",
+    OriginalValue: "的每日新增确诊人数",
+    ByConfirmed: "的死亡确诊比",
+    ByArea: "的累计确诊面积密度",
+    ByPopulation: "的累计确诊人口比例",
+  },
+  Cured: {
+    AccumulatedValue: "的累计确诊人数",
+    OriginalValue: "的每日新增确诊人数",
+    ByConfirmed: "的治愈确诊比",
+    ByArea: "的累计确诊面积密度",
+    ByPopulation: "的累计确诊人口比例",
+  }
+}
 const maxOpacityValue = {
   Confirmed: {
     AccumulatedValue: 8000,
@@ -68,16 +87,11 @@ const maxOpacityValue = {
 
   }
 }
-
-
 var Dataset = Object;
 const json_provinces_arr = ['11', '12', '13', '14', '15', '21', '22', '23', '31', '32', '33', '34', '35', '36', '37', '41', '42', '43', '44', '45', '46', '50', '51', '52', '53', '54', '61', '62', '63', '64', '65', '71', '81', '82']
 const json_provinces_provinceName = ['北京市', '天津市', '河北省', '山西省', '内蒙古自治区', '辽宁省', '吉林省', '黑龙江省', '上海市', '江苏省', '浙江省', '安徽省', '福建省', '江西省', '山东省', '河南省', '湖北省', '湖南省', '广东省', '广西壮族自治区', '海南省', '重庆市', '四川省', '贵州省', '云南省', '西藏自治区', '陕西省', '甘肃省', '青海省', '宁夏回族自治区', '新疆维吾尔自治区', '台湾省', '香港特别行政区', '澳门特别行政区'];
 var jsonSet = []
-
 const promiseList = json_provinces_arr.map(d => fetchGeoPath(d, 'china-geojson-master/geometryProvince/'));
-
-
 const projection = d3.geoMercator()
   .center([105, 38])
   .scale(720)
@@ -266,7 +280,6 @@ function fetchData() {
 function fetchGeoPath(file_name, file_dir) {
   return d3.json(file_dir + file_name + '.json')
 }
-
 var borderCollections;
 function renderGeoPath(json) {
   layer1
@@ -343,15 +356,8 @@ function getCityArea(cityName) {
 function getCityPopulation(cityName) {
   return cityPopulationList[cityNameList.indexOf(cityName)]
 }
-
-
-
-
 fetchData()
-
-
 var DataRecords = [];
-
 function getDataPrepared(selectedDate) {
   var DataRecordForDate = {
     DateKey: selectedDate,
@@ -563,6 +569,10 @@ function InitializeHighlight(e) {
       .attr('height', Theme.svgSize)
       .attr('width', Theme.svgSize)
   })
+  setTimeout(() => {
+
+    renderLineMap();
+  }, 80)
   return ExemptedKey;
 }
 
@@ -663,23 +673,28 @@ function InitializeLegend(sKey, sMode) {
 const InfoCanvas = d3.select("#InfoCanvas")
 
 InfoCanvas.append("rect").attr('width', "100%").attr('height', 1)
-  .attr('y', 104).attr("fill", "#00000030")
-InfoCanvas.append("text").attr('y', 104).attr("fill", "#00000030")
+  .attr('y', 104).attr("fill", "#000000")
+  .attr('opacity', .1)
+InfoCanvas.append("text").attr('y', 104).attr("fill", "#000000")
+  .attr('opacity', .1)
   .text("1 月 10 日")
   .attr("text-anchor", "start")
   .attr("dominant-baseline", "text-before-edge")
   .attr('font-size', 10)
-InfoCanvas.append("text").attr('y', 104).attr("fill", "#00000030")
+InfoCanvas.append("text").attr('y', 104).attr("fill", "#000000")
+  .attr('opacity', .1)
   .text("2020 年")
   .attr("text-anchor", "start")
   .attr("dominant-baseline", "text-after-edge")
   .attr('font-size', 10)
-InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#00000030")
+InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#000000")
+  .attr('opacity', .1)
   .text((new Date().getMonth() + 1) + " 月 " + (new Date().getDate() - 1) + " 日 ")
   .attr("text-anchor", "end")
   .attr("dominant-baseline", "text-before-edge")
   .attr('font-size', 10)
-InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#00000030")
+InfoCanvas.append("text").attr('y', 104).attr('x', '100%').attr("fill", "#000000")
+  .attr('opacity', .1)
   .text("2020 年")
   .attr("text-anchor", "end")
   .attr("dominant-baseline", "text-after-edge")
@@ -690,7 +705,8 @@ function UpdateSelectedCityInfo(selectionList = _selectionList) {
 
   let labelInnerText = "";
   if (selectionList.length > 0) {
-    labelInnerText += " (" + selectionList[0].cityName;
+    labelInnerText += " (<span style=\"color:" + Theme[_sKey + "BorderColor"] +
+      ";font-weight:700\">" + selectionList[0].cityName;
     if (selectionList.length > 3) {
       for (var i = 1; i < 2; i++)
         labelInnerText += "、" + selectionList[i].cityName;
@@ -701,11 +717,13 @@ function UpdateSelectedCityInfo(selectionList = _selectionList) {
       for (var i = 1; i < selectionList.length; i++)
         labelInnerText += "、" + selectionList[i].cityName;
     }
-    labelInnerText += ")"
+    labelInnerText += '</span>' + TimelineLabelText[_sKey][_sMode] + ")"
   }
-
-  d3.select("#InfoLabel")
-    .text(labelInnerText)
+  else {
+    labelInnerText = "在<span style=\"color:" + Theme[_sKey + "BorderColor"] +
+      ";font-weight:700\">地图</span>或<span style=\"color:" + Theme[_sKey + "BorderColor"] + ";font-weight:700\">列表</span>中选择城市集合以显示"
+  }
+  document.getElementById("InfoLabel").innerHTML = labelInnerText;
 
 
   InfoCanvas.selectAll("g").transition().duration(120).attr("opacity", 0);
@@ -848,14 +866,16 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
 
     for (var _lineIndex = 1; _lineIndex <= 4; _lineIndex++) {
       TimelineLayer.append('rect').attr('width', '100%').attr('height', 1)
-        .attr('fill', '#00000030')
+        .attr('fill', '#000000')
+        .attr('opacity', .12)
         .attr('y', 105 - _lineIndex * 20)
       TimelineLayer.append('text').text(
         _sMode != "ByConfirmed" ?
           Math.round((charMax * _lineIndex) * 2000) / 10000 :
           Math.round(((charMax * _lineIndex) * 2000)) / 100 + "%"
       )
-        .attr('fill', '#00000080')
+        .attr('fill', '#000000')
+        .attr('opacity', .5)
         .attr('y', 106.3 - _lineIndex * 20)
         .attr('text-anchor', 'start')
         .attr('dominant-baseline', 'middle')
@@ -1001,11 +1021,32 @@ d3.select(".DragToExpandControlPointerEvents").on("click", () => {
 })
 
 
+const LineMapCanvas = d3.select("#LinkCanvas");
+
+
+
+
 function renderLineMap(selectionList = _selectionList) {
-  const axis_xOffest_percent = 100 / 3;
+  const boundingWidth = document.getElementById("LinkCanvas").getBoundingClientRect().width;
+
+  const barHeight = 12;
+  const barPadding = 4;
+  const axis_xOffest = [(Math.round(boundingWidth * 28) / 100),
+  (Math.round(boundingWidth * 52) / 100), (Math.round(boundingWidth * 76) / 100)];
+
+  const anchorPoints = [(axis_xOffest[0] * 1.5 + axis_xOffest[1]) / 2.5,
+  (axis_xOffest[0] + 1.5 * axis_xOffest[1]) / 2.5,
+  (axis_xOffest[1] * 1.5 + axis_xOffest[2]) / 2.5,
+  (axis_xOffest[1] + 1.5 * axis_xOffest[2]) / 2.5]
   const maxLength_percent = 25;
-  const lengthCalculator = (e) => Math.cbrt(e) * 2;
-  const LineMapCanvas = d3.select("LinkCanvas");
+  const basePointX = 0;
+  const basePointY = 1;
+  const lengthCalculator = e => Math.pow(e, .25) * 4;
+
+
+
+  d3.select("#LinkCanvasLayer").remove();
+  const LinkCanvasLayer = LineMapCanvas.append("g").attr("id", "LinkCanvasLayer")
   const __sKeyList = ["Confirmed", "Dead", "Cured"]
 
   var LineMapList = [];
@@ -1045,5 +1086,70 @@ function renderLineMap(selectionList = _selectionList) {
       tmpArray.sort((a, b) => b[idx] - a[idx]);
       return tmpArray;
     })
-  console.log(__sortedList)
+
+
+  let __indexList = ([0, 1, 2]).map(
+    idx => LineMapList.map(
+      itm => __sortedList[idx].findIndex(e => e[3] == itm[3])
+    )
+  )
+
+
+
+  const linkPathGenerator = (e) => {
+    console.log(__indexList[0][e], __indexList[1][e], __indexList[2][e])
+    var s = "M" + (axis_xOffest[0]) + " " + (__indexList[0][e] * (barHeight + barPadding))
+      + "C" + (anchorPoints[0]) + " " + (__indexList[0][e] * (barHeight + barPadding))
+      + " " + (anchorPoints[1]) + " " + (__indexList[1][e] * (barHeight + barPadding))
+      + " " + (axis_xOffest[1]) + " " + (__indexList[1][e] * (barHeight + barPadding))
+      + "C" + (anchorPoints[2]) + " " + (__indexList[1][e] * (barHeight + barPadding))
+      + " " + (anchorPoints[3]) + " " + (__indexList[2][e] * (barHeight + barPadding))
+      + " " + (axis_xOffest[2]) + " " + (__indexList[2][e] * (barHeight + barPadding))
+    console.log(s)
+    return s;
+  };
+
+  LinkCanvasLayer.selectAll(".LinkBarLinks")
+    .data(LineMapList)
+    .enter()
+    .append('path')
+    .attr('fill', 'none')
+    .attr('d', (d, i) => linkPathGenerator(i))
+    .attr('stroke', 'black')
+    .attr('stroke-width', 1)
+    .attr('opacity', .19)
+    .attr('transform', 'translate(' + basePointX + ',' + (basePointY - Theme.mapBaselineWidth / 2 + 1.5 + barHeight / 2) + ')')
+
+  for (idx in __indexList) {
+    LinkCanvasLayer.selectAll(".LinkBarColumn")
+      .data(LineMapList)
+      .enter()
+      .append('rect')
+      .attr('x', d => basePointX + axis_xOffest[idx] - lengthCalculator(d[idx]))
+      .attr('y', (d, i) => {
+        return basePointY + __indexList[idx][i] * (barHeight + barPadding)
+      })
+      .attr('width', d => 2 * lengthCalculator(d[idx]))
+      .attr('height', barHeight)
+      .attr('fill', Theme[__sKeyList[idx] + 'LightColor'])
+      .attr('stroke', Theme[__sKeyList[idx] + 'BorderColor'])
+      .attr('stroke-width', Theme.mapBaselineWidth)
+      .attr('rx', 1.5)
+      .attr('ry', 1.5)
+    LinkCanvasLayer.selectAll(".LinkBarCircle")
+      .data(LineMapList)
+      .enter()
+      .append('circle')
+      .attr('cx', basePointX + axis_xOffest[idx])
+      .attr('cy', (d, i) => {
+        return basePointY + __indexList[idx][i] * (barHeight + barPadding) + 0.5 * barHeight
+      })
+      .attr('r', (d, i) => d[idx] > 0 ? 0 : 2)
+      .attr('fill', Theme[__sKeyList[idx] + 'LightColor'])
+      .attr('stroke', Theme[__sKeyList[idx] + 'BorderColor'])
+      .attr('stroke-width', Theme.mapBaselineWidth)
+
+  }
+
+  console.log(__sortedList, __indexList)
 }

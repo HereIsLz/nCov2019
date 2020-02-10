@@ -32,7 +32,7 @@ body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margi
 .ms-ChoiceFieldGroup-flexContainer{min-width:100%!important}
 .TitleForSmallScreen{padding:28px 28px 4px 28px;font-size:32px;font-weight:700;color:#881719;font-family:roboto}
 .CanvasContainer{width:100%;height:300px}
-.LegendContainer{padding-left: 28px;width:calc(100% - 28px);height:40px}
+.LegendContainer{padding-left:28px;width:calc(100% - 28px);height:40px}
 .ControlContainer{width:calc(100% - 56px);padding:16px 16px 0 16px;min-width:calc(100% - 56px)!important}
 .ms-ChoiceField{display:initial!important}
 .ms-ChoiceField-wrapper{margin-top:8px!important;margin-bottom:8px!important}
@@ -69,16 +69,18 @@ from{height:calc(100vh - 58px)}
 to{height:120px}
 }
 @media screen and (min-width:1000px){
+#LinkCanvas{margin-top:28px}
 .LegendContainer{background-color:#f9f9fba0;position:absolute;left:538px;top:12px;width:360px;min-width:360px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:40px}
 .TitleClass{font-size:36px;font-weight:700;color:#881719}
 .TitleForSmallScreen{display:none}
 .CanvasContainer{width:820px;height:600px;margin-left:calc(50% - 148px);margin-top:calc(49vh - 340px)}
 .ControlContainer{background-color:#f9f9fba0;position:absolute;left:12px;top:12px;width:480px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:calc(100vh - 58px)}
 .TimelineInfoContainer{background-color:#f9f9fba0;position:absolute;left:538px;bottom:12px;width:360px;border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:120px}
-.LinkingCompareContainer{background-color:#f9f9fba0;position:absolute;right:12px;bottom:12px;width:calc(100% - 990px);border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:120px}
+.LinkingCompareContainer{background-color:#f9f9fbd8;position:absolute;right:12px;bottom:12px;width:calc(100% - 990px);border:1px solid #00000030;border-radius:4px;padding:16px;overflow:hidden;height:120px}
 .LinkingCompareContainer_Expanded{animation:expander .5s;-moz-animation:expander .5s;-webkit-animation:expander .5s;-o-animation:expander .5s;animation-fill-mode:forwards}
 .LinkingCompareContainer_Compressed{animation:expander- .5s;-moz-animation:expander- .5s;-webkit-animation:expander- .5s;-o-animation:expander- .5s;animation-fill-mode:forwards}
 }
+#grad{background-image:linear-gradient(#f9f9fb00,#f9f9fb80,#f9f9fbff,#f9f9fbff);position:absolute;height:32px;bottom:0;width:100%;pointer-events:none}
 .InfoLabel{font-weight:700}
 .TimeLineLabel{font-size:14px}
 svg text{font-family:roboto}

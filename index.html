@@ -3,8 +3,9 @@
 
 <head>
     <script src="d3.v5.min.js"></script>
-    
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
     <link href="FontRoboto.css" rel="stylesheet" type="text/css" />
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:400,700" rel="stylesheet" type="text/css" />
@@ -33,8 +34,9 @@
     <div class="TimelineInfoContainer">
         <div>
             <div style="position: absolute;">
-                <span class="TimeLineLabel InfoLabel" style="display:inline-block;">时间轴</span>
-                <span class="TimeLineLabel" id="InfoLabel" style="display:inline-block;"></span>
+                <span class="TimeLineLabel InfoLabel" style="display:inline-block;margin-right:8px">时间序列</span>
+                <span class="TimeLineLabel" id="InfoLabel"
+                    style="display:inline-block;">在<strong>地图</strong>或<strong>列表</strong>中选择城市集合以显示</span>
             </div>
         </div>
         <svg height="100%" width="100%" id="InfoCanvas" style="margin-top: 8px;">
@@ -43,7 +45,7 @@
     <div class="LinkingCompareContainer">
         <div>
             <div style="position: absolute;">
-                <span class="TimeLineLabel InfoLabel" style="display:inline-block;">Block4</span>
+                <span class="TimeLineLabel InfoLabel" style="display:inline-block;"></span>
                 <span class="TimeLineLabel" style="display:inline-block;"></span>
             </div>
             <div class="DragToExpandControl">
@@ -51,8 +53,10 @@
             <div class="DragToExpandControlPointerEvents">
             </div>
         </div>
+
         <svg height="100%" width="100%" id="LinkCanvas">
         </svg>
+        <div id="grad"></div>
     </div>
     <div>
         <div id="app" />
