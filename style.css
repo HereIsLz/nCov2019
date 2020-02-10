@@ -30,14 +30,14 @@ body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margi
 #Pivot2-Tab2{width:33%!important}
 .TitleClass{display:none}
 .ms-ChoiceFieldGroup-flexContainer{min-width:100%!important}
-.TitleForSmallScreen{padding:28px;padding-bottom:40px;font-size:32px;font-weight:700;color:#881719;font-family:roboto}
+.TitleForSmallScreen{padding:28px 28px 4px 28px;font-size:32px;font-weight:700;color:#881719;font-family:roboto}
 .CanvasContainer{width:100%;height:300px}
 .LegendContainer{padding:0 28px 0 28px;width:calc(100% - 56px);height:40px}
-.ControlContainer{width:calc(100% - 56px);padding:16px 16px 0 16px;min-width:calc(100% - 56px)!important}
+.ControlContainer{width:calc(100% - 56px);padding:16px 16px 0 16px;min-width:calc(100% - 28px)!important}
 .ms-ChoiceField{display:initial!important}
 .ms-ChoiceField-wrapper{margin-top:8px!important;margin-bottom:8px!important}
 body{overflow-x:hidden}
-.TimelineInfoContainer{margin:12px 12px 0 -12px;padding:8px 16px 0 0}
+.TimelineInfoContainer{margin:12px 12px -54px 12px;padding:8px 16px 0 16px}
 .LinkingCompareContainer{display:none}
 }
 @keyframes expander{
