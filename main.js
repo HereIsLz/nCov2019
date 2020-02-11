@@ -419,6 +419,7 @@ var CountByCountry_Dead_ViewModel = 0;
 var _sKey, _sDate, _sMode;
 function fetchDataViewModel(sKey, sDate, sMode) {
 
+  document.getElementsByTagName("meta")[1].content = Theme[sKey + "BorderColor"]
   let targetDataSet = DataRecords.filter(e => e.DateKey == DateToConsultString(sDate))
   if (targetDataSet.length == 0) return [];
   InitializeLegend(sKey, sMode);
