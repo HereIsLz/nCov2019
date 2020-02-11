@@ -18,7 +18,7 @@ div::-webkit-scrollbar-track{margin-top:59px}
 #Pivot2-Tab2.is-selected{background-color:#00695c!important}
 #Pivot2-Tab2:hover{background-color:#00574e!important}
 #Pivot2-Tab2:active{background-color:#00423b!important}
-body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;width:calc(100%)}
+body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;width:calc(100%);overflow-x:hidden}
 .ChoiceGroupLabelStyle{margin-left:28px}
 @media screen and (max-width:1000px){
 .SouthSeaSvgContainer{border-radius:3px;border:1px solid #ededef;padding:4px;width:40px;height:50px;margin-top:-90px;margin-bottom:12px;margin-left:calc(100% - 68px)}
