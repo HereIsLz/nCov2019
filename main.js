@@ -592,9 +592,9 @@ d3.json("china-geojson-master/china.json").then(
 
 
 const LegendConfig = {
-  rectWidth: 38,
+  rectWidth: (document.getElementById("InfoCanvas").getBoundingClientRect().width - 7 * 6) / 8,
   rectHeight: 14,
-  rectPadding: 8,
+  rectPadding: 6,
   textRectPadding: 12,
   radius: 1.5
 }
