@@ -878,9 +878,6 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
         .attr('dominant-baseline', 'middle')
         .attr('font-size', 10)
     }
-
-    //let boundingWidth = document.getElementById("InfoCanvas").getBoundingClientRect().width;
-
     TimelineLayer.selectAll("defs").remove();
     let TimelineLayer_GrdtDefs = TimelineLayer.append("defs");
     TimelineLayer.selectAll(".TimelineBar")
@@ -960,50 +957,6 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
           d3.select("#tb" + i).transition().duration(120).attr('stroke-width', Theme.mapBaselineWidth);
         }, 120)
       })
-
-    /*
-    var pathGenerator = d3.line()
-      .x(function (d, i) { return (i + 0.5) * (boundingWidth / DataSorted.length); }) // set the x values for the line generator
-      .y(function (d) { return 105 - d / charMax; }) // set the y values for the line generator 
-      .curve(d3.curveCardinal)
-
-    TimelineLayer
-      .selectAll(".LineChartNode")
-      .data(DataSorted)
-      .enter()
-      .append('circle')
-      .attr('cx', (d, i) => (100 / DataSorted.length * (i + 0.5)) + '%')
-      .attr("cy", d => (105 - (d / charMax)))
-      .attr('r', 5)
-      .attr('fill', Theme[_sKey + "Color"])
-      .attr('stroke', Theme.backgroundColor)
-      .attr('stroke-width', Theme.mapProvlineWidth)
-
-    TimelineLayer.append('path')
-      .attr('d', pathGenerator(DataSorted))
-      .attr('fill', 'none')
-      .attr('stroke', Theme[_sKey + "Color"])
-      .attr('stroke-width', Theme.mapProvlineWidth)
-
-
-    if (selectionList.length <= 5) {
-      lineChartData.forEach((lineData) => {
-
-        TimelineLayer
-          .selectAll(".LineChartNode")
-          .data(lineData)
-          .enter()
-          .append('circle')
-          .attr('cx', (d, i) => (100 / lineData.length * (i + 0.5)) + '%')
-          .attr("cy", d => (105 - (d / charMax)))
-          .attr('r', 3)
-          .attr('fill', Theme[_sKey + "Color"])
-          .attr('stroke', Theme.backgroundColor)
-          .attr('stroke-width', Theme.mapProvlineWidth)
-
-      })
-    }
-    */
     TimelineLayer.transition().duration(200).attr('opacity', 1);
   }
   else {
@@ -1038,16 +991,11 @@ function renderLineMap(selectionList = _selectionList) {
       .attr('transform', 'translate(' + (boundingWidth / 2 - 150) + ',' + 2 + ')')
     return;
   }
-  const barHeight = 12;
-  const barPadding = 4;
-  const axis_xOffest = [(Math.round(boundingWidth * 28) / 100),
-  (Math.round(boundingWidth * 52) / 100), (Math.round(boundingWidth * 76) / 100)];
+  const barHeight = 8;
+  const barPadding = 2;
+  const axis_xOffest = [(Math.round(boundingWidth * 20) / 100),
+  (Math.round(boundingWidth * 50) / 100), (Math.round(boundingWidth * 80) / 100)];
 
-  const anchorPoints = [(axis_xOffest[0] * 1.5 + axis_xOffest[1]) / 2.5,
-  (axis_xOffest[0] + 1.5 * axis_xOffest[1]) / 2.5,
-  (axis_xOffest[1] * 1.5 + axis_xOffest[2]) / 2.5,
-  (axis_xOffest[1] + 1.5 * axis_xOffest[2]) / 2.5]
-  const maxLength_percent = 25;
   const basePointX = 0;
   const basePointY = 1;
   const lengthCalculator = e => Math.pow(e, .25) * 4;
@@ -1104,16 +1052,41 @@ function renderLineMap(selectionList = _selectionList) {
 
 
 
-  const linkPathGenerator = (e) => {
-    console.log(__indexList[0][e], __indexList[1][e], __indexList[2][e])
-    var s = "M" + (axis_xOffest[0]) + " " + (__indexList[0][e] * (barHeight + barPadding))
-      + "C" + (anchorPoints[0]) + " " + (__indexList[0][e] * (barHeight + barPadding))
-      + " " + (anchorPoints[1]) + " " + (__indexList[1][e] * (barHeight + barPadding))
-      + " " + (axis_xOffest[1]) + " " + (__indexList[1][e] * (barHeight + barPadding))
-      + "C" + (anchorPoints[2]) + " " + (__indexList[1][e] * (barHeight + barPadding))
-      + " " + (anchorPoints[3]) + " " + (__indexList[2][e] * (barHeight + barPadding))
-      + " " + (axis_xOffest[2]) + " " + (__indexList[2][e] * (barHeight + barPadding))
-    console.log(s)
+  const linkPathGenerator = (d, e) => {
+    const l1 = lengthCalculator(d[0])
+    const l2 = lengthCalculator(d[1])
+    const l3 = lengthCalculator(d[2])
+    const pList = [axis_xOffest[0] + l1,
+    (((axis_xOffest[0] + l1) * 2 + (axis_xOffest[1] - l2)) / 3),
+    (((axis_xOffest[0] + l1) + 2 * (axis_xOffest[1] - l2)) / 3),
+    axis_xOffest[1] - l2,
+    axis_xOffest[1] + l2,
+    (((axis_xOffest[1] + l2) * 2 + (axis_xOffest[2] - l3)) / 3),
+    (((axis_xOffest[1] + l2) + 2 * (axis_xOffest[2] - l3)) / 3),
+    axis_xOffest[2] - l3]
+    const yList = [__indexList[0][e] * (barHeight + barPadding),
+    __indexList[1][e] * (barHeight + barPadding),
+    __indexList[2][e] * (barHeight + barPadding)]
+
+    var s = "M" + pList[0] + " " + yList[0]
+      + "C" + pList[1] + " " + yList[0]
+      + " " + pList[2] + " " + yList[1]
+      + " " + pList[3] + " " + yList[1]
+      + "L" + pList[4] + " " + yList[1]
+      + "C" + pList[5] + " " + yList[1]
+      + " " + pList[6] + " " + yList[2]
+      + " " + pList[7] + " " + yList[2]
+
+      + "L" + pList[7] + " " + (yList[2] + barHeight)
+      + "C" + pList[6] + " " + (yList[2] + barHeight)
+      + " " + pList[5] + " " + (yList[1] + barHeight)
+      + " " + pList[4] + " " + (yList[1] + barHeight)
+      + "L" + pList[3] + " " + (yList[1] + barHeight)
+      + "C" + pList[2] + " " + (yList[1] + barHeight)
+      + " " + pList[1] + " " + (yList[0] + barHeight)
+      + " " + pList[0] + " " + (yList[0] + barHeight)
+
+      + "Z"
     return s;
   };
 
@@ -1121,12 +1094,30 @@ function renderLineMap(selectionList = _selectionList) {
     .data(LineMapList)
     .enter()
     .append('path')
-    .attr('fill', 'none')
-    .attr('d', (d, i) => linkPathGenerator(i))
-    .attr('stroke', 'black')
-    .attr('stroke-width', 1)
-    .attr('opacity', .19)
-    .attr('transform', 'translate(' + basePointX + ',' + (basePointY - Theme.mapBaselineWidth / 2 + 1.5 + barHeight / 2) + ')')
+    .attr('d', (d, i) => linkPathGenerator(d, i))
+    .attr('fill', 'black')
+    .attr('opacity', .086)
+    .attr('transform', 'translate(' + basePointX + ',' + (basePointY - Theme.mapBaselineWidth) + ')')
+    .attr('id', d => 'link-' + d[3])
+    .on('mouseover', (d) => {
+      d3.selectAll('.linkBar-' + d[3])
+        .attr('stroke-width', 2 * Theme.mapProvlineWidth)
+      d3.select('#link-' + d[3])
+        .attr('opacity', 0.36)
+      LinkCanvasLayer.append('text').text(d[3])
+        .attr('y', d3.select(".linkBar-" + d[3]).attr('y') )
+        .attr('text-anchor', 'start')
+        .attr('dominant-baseline', 'middle')
+        .attr('font-size', 10)
+        .classed('linkText', true)
+    })
+    .on('mouseout', (d) => {
+      LinkCanvasLayer.selectAll(".linkText").remove();
+      d3.selectAll('.linkBar-' + d[3])
+        .attr('stroke-width', Theme.mapBaselineWidth)
+      d3.select('#link-' + d[3])
+        .attr('opacity', 0.086)
+    })
 
   for (idx in __indexList) {
     LinkCanvasLayer.selectAll(".LinkBarColumn")
@@ -1144,6 +1135,26 @@ function renderLineMap(selectionList = _selectionList) {
       .attr('stroke-width', Theme.mapBaselineWidth)
       .attr('rx', 1.5)
       .attr('ry', 1.5)
+      .attr('class', d => 'linkBar-' + d[3])
+      .on('mouseover', (d) => {
+        d3.selectAll('.linkBar-' + d[3])
+          .attr('stroke-width', 2 * Theme.mapProvlineWidth)
+        d3.select('#link-' + d[3])
+          .attr('opacity', 0.36)
+        LinkCanvasLayer.append('text').text(d[3])
+          .attr('y', d3.select(".linkBar-" + d[3]).attr('y'))
+          .attr('text-anchor', 'start')
+          .attr('dominant-baseline', 'text-before-edge')
+          .attr('font-size', 10)
+          .classed('linkText', true)
+      })
+      .on('mouseout', (d) => {
+        LinkCanvasLayer.selectAll(".linkText").remove();
+        d3.selectAll('.linkBar-' + d[3])
+          .attr('stroke-width', Theme.mapBaselineWidth)
+        d3.select('#link-' + d[3])
+          .attr('opacity', 0.086)
+      })
     LinkCanvasLayer.selectAll(".LinkBarCircle")
       .data(LineMapList)
       .enter()
@@ -1158,6 +1169,4 @@ function renderLineMap(selectionList = _selectionList) {
       .attr('stroke-width', Theme.mapBaselineWidth)
 
   }
-
-  console.log(__sortedList, __indexList)
 }
