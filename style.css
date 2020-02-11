@@ -21,7 +21,7 @@ div::-webkit-scrollbar-track{margin-top:59px}
 body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margin:0;width:calc(100%);overflow-x:hidden}
 .ChoiceGroupLabelStyle{margin-left:28px}
 @media screen and (max-width:1000px){
-.SouthSeaSvgContainer{border-radius:3px;border:1px solid #ededef;padding:4px;width:40px;height:50px;margin-top:-90px;margin-bottom:12px;margin-left:calc(100% - 68px)}
+.SouthSeaSvgContainer{border-radius:3px;border:1px solid #ededef;padding:4px;width:40px;height:50px;margin-top:-60px;margin-bottom:-12px;margin-left:calc(100% - 68px)}
 .ControlContainer{margin:12px 12px 0 12px;min-width:480px;padding:16px}
 #Pivot1-Tab1{width:33%!important}
 #Pivot1-Tab0{width:33%!important}
@@ -38,7 +38,7 @@ body{background-color:#f9f9fb;font-family:roboto;height:calc(100vh - 16px);margi
 .ms-ChoiceField{display:initial!important}
 .ms-ChoiceField-wrapper{margin-top:8px!important;margin-bottom:8px!important}
 body{overflow-x:hidden}
-.TimelineInfoContainer{margin:12px 12px -54px 12px;padding:8px 8px 0 8px;border-top:1px solid #ededef}
+.TimelineInfoContainer{margin:20px 20px -54px 20px;padding-top:8px;border-top:1px solid #ededef}
 .LinkingCompareContainer{display:none}
 }
 @keyframes expander{
