@@ -10,7 +10,6 @@ const Theme = {
   deadAccentColor: '#4527a0',
   curedAccentColor: '#1e9255',
   NoneValueColor: '#70727e',
-  ByConfirm_DividedByZeroColor: '#666666',//比例下
   ByConfirm_ZeroColor: '#d03218',
   ConfirmedColor: '#d03218',
   DeadColor: '#4527a0',
@@ -24,7 +23,7 @@ const Theme = {
   mapBaselineWidth: 0.44,
   mapProvlineWidth: 1.25,
   noneValueOpacity: 0.1,
-  svgSize: 40
+  svgSize: 36
 }
 const TimelineLabelText = {
   Confirmed: {
