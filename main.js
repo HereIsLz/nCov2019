@@ -295,8 +295,12 @@ function renderGeoPath(json) {
     .attr('stroke-width', Theme.mapBaselineWidth)
     .classed('provID-' + json.provId, true)
     .on('click', (d) => {
-      _selectionList = [{ key: d.properties.id, cityName: d.properties.name }];
-      InitializeHighlight(_selectionList)
+      if (!(_selectionList.filter(e => e.key == d.properties.id).length > 0))
+        _selectionList.push({ key: d.properties.id, cityName: d.properties.name });
+      else {
+        _selectionList = _selectionList.filter(e => e.key != d.properties.id)
+      }
+      InitializeHighlight(_selectionList);
     })
 
   borderCollections = layer2
@@ -1105,7 +1109,7 @@ function renderLineMap(selectionList = _selectionList) {
       d3.select('#link-' + d[3])
         .attr('opacity', 0.36)
       LinkCanvasLayer.append('text').text(d[3])
-        .attr('y', d3.select(".linkBar-" + d[3]).attr('y') )
+        .attr('y', d3.select(".linkBar-" + d[3]).attr('y'))
         .attr('text-anchor', 'start')
         .attr('dominant-baseline', 'middle')
         .attr('font-size', 10)
@@ -1170,3 +1174,8 @@ function renderLineMap(selectionList = _selectionList) {
 
   }
 }
+
+d3.select("#SelectionCancelControl").on('click', function (e) {
+  _selectionList = [];
+  InitializeHighlight(_selectionList);
+})
