@@ -1121,7 +1121,7 @@ function renderLineMap(selectionList = _selectionList) {
       LinkCanvasLayer.append('text').text(d[3])
         .attr('y', d3.select(".linkBar-" + d[3]).attr('y'))
         .attr('text-anchor', 'start')
-        .attr('dominant-baseline', 'middle')
+        .attr('dominant-baseline', 'text-before-edge')
         .attr('font-size', 10)
         .classed('linkText', true)
     })
