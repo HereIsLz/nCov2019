@@ -9,7 +9,7 @@ const Theme = {
   sumAccentColor: '#d03218',
   deadAccentColor: '#4527a0',
   curedAccentColor: '#1e9255',
-  NoneValueColor: '#70727e',
+  NoneValueColor: '#60626e',
   ByConfirm_ZeroColor: '#d03218',
   ConfirmedColor: '#d03218',
   DeadColor: '#4527a0',
@@ -20,7 +20,7 @@ const Theme = {
   ConfirmedLightColor: '#f4e1df',
   DeadLightColor: '#e3dff0',
   CuredLightColor: '#deece7',
-  mapBaselineWidth: 0.44,
+  mapBaselineWidth: 0.5,
   mapProvlineWidth: 1.25,
   noneValueOpacity: 0.1,
   svgSize: 36
@@ -782,7 +782,10 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
                   2500 : _mx < 5000 ?
                     5000 : _mx < 10000 ?
                       10000 : _mx < 20000 ?
-                        20000 : 50000
+                        20000 : _mx < 50000 ?
+                          50000 : _mx < 80000 ?
+                            80000 : _mx < 100000 ?
+                              100000 : 120000
 
     }
     else if (_sMode == "OriginalValue") {
@@ -837,7 +840,11 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
                     0.2 : _mx < 0.4 ?
                       0.4 : _mx < 0.8 ?
                         0.8 : _mx < 1 ?
-                          1 : 2
+                          1 : _mx < 1.5 ?
+                            1.5 : _mx < 2 ?
+                              2 : _mx < 3 ?
+                                3 : _mx < 5 ?
+                                  5 : 8
     }
 
     else if (_sMode == "ByPopulation") {
@@ -862,7 +869,10 @@ function UpdateSelectedCityInfo_Core(selectionList = _selectionList) {
                           2.5 : _mx < 5 ?
                             5 : _mx < 10 ?
                               10 : _mx < 15 ?
-                                15 : 20
+                                15 : _mx < 20 ?
+                                  20 : _mx < 30 ?
+                                    30 : _mx < 50 ?
+                                      50 : 100
     }
 
     for (var _lineIndex = 1; _lineIndex <= 4; _lineIndex++) {
