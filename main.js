@@ -270,8 +270,6 @@ function fetchData() {
                 tmpDate = new Date(tmpDate.getTime() + 86400000);
               }
             }
-          ).then(
-            console.log("Async Work Done.")
           )
         })
       })
@@ -411,7 +409,6 @@ function getDataPrepared(selectedDate) {
     return d.key == selectedDate;
   })
   if (dataInCorrespondingDate.length == 0) {
-    console.log(DataRecords[DataRecords.length - 1], DataRecords)
     DataRecordForDate.records = DataRecords[DataRecords.length - 1].records.map(
       (e) => { e.Confirmed = 0, e.Dead = 0, e.Cured = 0; return e }
     )
