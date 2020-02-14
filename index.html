@@ -17,7 +17,7 @@
 
 <body>
     <div class="TitleForSmallScreen">新冠病毒疫情地图</div>
-    <svg class="CanvasContainer" viewBox="0 0 800 600">
+    <svg class="CanvasContainer" viewBox="0 0 800 720">
         <defs>
             <filter id="Gaussian_Blur">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
@@ -30,6 +30,7 @@
         <g id="layer1" />
         <g id="layer1_Prov" pointer-events="none" />
         <g id="layer2" pointer-events="none" />
+        <g id="tooltips" pointer-events="none" />
         <g id="legend" pointer-events="none" />
     </svg>
     <div class="SouthSeaSvgContainer">
@@ -58,10 +59,10 @@
                         style="font-weight:700;color:#4527a0">死亡</span> - <span
                         style="font-weight:700;color:#00695c">治愈</span> 对比</span>
             </div>
-            <!--div class="DragToExpandControl">
+            <div class="DragToExpandControl">
             </div>
             <div class="DragToExpandControlPointerEvents">
-            </div-->
+            </div>
         </div>
 
         <svg height="100%" width="100%" id="LinkCanvas">

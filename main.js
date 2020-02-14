@@ -98,6 +98,8 @@ const projection = d3.geoMercator()
 const pathMap = d3.geoPath().projection(projection);
 const layer1 = d3.select('#layer1')
 const layer2 = d3.select('#layer2').attr("opacity", .8)
+
+const layer3 = d3.select('#tooltips')
 function DateToConsultString(dt) {
   return (dt.getMonth() + 1) + "月" + dt.getDate() + "日"
 }
@@ -302,6 +304,53 @@ function renderGeoPath(json) {
       }
       InitializeHighlight(_selectionList);
     })
+    .on('mouseover', function (d) {
+      const ttt = DataRecords.filter(e => e.DateKey == DateToConsultString(_sDate))[0].records
+        .filter(e => e.key == d.properties.id)[0]
+
+      const ttp = d3.select("#centerPoint-" + d.properties.id)
+        .append('g')
+        .attr('id', 'cityTooltip-' + d.properties.id)
+        .attr('transform', 'translate(' + Theme.svgSize + ',' + Theme.svgSize + ')')
+
+      ttp.append('rect')
+        .attr('fill', '#f9f9fba0')
+        .attr('stroke', '#00000030')
+        .attr('stroke-width', 1)
+        .attr('rx', 3)
+        .attr('ry', 3)
+        .attr('width', 190)
+        .attr('height', 88)
+      ttp.append('text')
+        .text(ttt.provName)
+        .attr('font-size', 12)
+        .attr('y', 4)
+        .attr('x', 5)
+        .attr('text-anchor', 'start')
+        .attr('dominant-baseline', 'text-before-edge')
+      ttp.append('text')
+        .text(ttt.name)
+        .attr('font-size', 18)
+        .attr('font-weight', 700)
+        .attr('fill', Theme[_sKey + "BorderColor"])
+        .attr('y', 22)
+        .attr('x', 4)
+        .attr('text-anchor', 'start')
+        .attr('dominant-baseline', 'text-before-edge')
+      ttp.append('text')
+        .text(Math.round(ttt[_sMode == "OriginalValue" ? _sKey : _sKey + _sMode] * 10000) / 10000)
+        .attr('font-size', 36)
+        .attr('font-weight', 700)
+        .attr('fill', Theme[_sKey + "BorderColor"])
+        .attr('y', 40)
+        .attr('x', 4)
+        .attr('text-anchor', 'start')
+        .attr('dominant-baseline', 'text-before-edge')
+
+    })
+    .on('mouseout', function (d) {
+      d3.selectAll("#cityTooltip-" + d.properties.id).remove();
+    })
 
   borderCollections = layer2
     .selectAll('.centerPoints')
@@ -313,7 +362,6 @@ function renderGeoPath(json) {
 
     .attr("id", d => "centerPoint-" + d.properties.id)
     .attr("class", "centerPoint")
-
 }
 
 function getValueInterface(cityName, selectedDate, selectedKey) {
@@ -345,14 +393,6 @@ function getOpacity(val, maxVal = 4000) {
   return Math.cbrt(val / maxVal) + 0.1;
 }
 
-
-function updateCityPathColor(cityID, color, alpha) {
-  d3.selectAll('#cityID-' + cityID)
-    .transition()
-    .duration(640)
-    .attr('fill', color)
-    .attr('opacity', alpha)
-}
 
 function getCityArea(cityName) {
   return cityAreaList[cityNameList.indexOf(cityName)]
@@ -1124,6 +1164,17 @@ function renderLineMap(selectionList = _selectionList) {
         .attr('dominant-baseline', 'text-before-edge')
         .attr('font-size', 10)
         .classed('linkText', true)
+      for (var idx = 0; idx < 3; idx++)
+        LinkCanvasLayer.append('text').text(d[idx])
+          .attr('y', Number(d3.select("#linkBar-" + d[3] + idx).attr('y')) + 2)
+          .attr('x', axis_xOffest[idx])
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'text-before-edge')
+          .attr('font-size', 36)
+          .attr('font-weight', 700)
+          .attr('fill', Theme[__sKeyList[idx] + 'BorderColor'])
+          .classed('linkText', true)
+          .attr('pointer-events', 'none')
     })
     .on('mouseout', (d) => {
       LinkCanvasLayer.selectAll(".linkText").remove();
@@ -1150,6 +1201,7 @@ function renderLineMap(selectionList = _selectionList) {
       .attr('rx', 1.5)
       .attr('ry', 1.5)
       .attr('class', d => 'linkBar-' + d[3])
+      .attr('id', d => 'linkBar-' + d[3] + idx)
       .on('mouseover', (d) => {
         d3.selectAll('.linkBar-' + d[3])
           .attr('stroke-width', 2 * Theme.mapProvlineWidth)
@@ -1161,6 +1213,17 @@ function renderLineMap(selectionList = _selectionList) {
           .attr('dominant-baseline', 'text-before-edge')
           .attr('font-size', 10)
           .classed('linkText', true)
+        for (var idx = 0; idx < 3; idx++)
+          LinkCanvasLayer.append('text').text(d[idx])
+            .attr('y', Number(d3.select("#linkBar-" + d[3] + idx).attr('y')) + 2)
+            .attr('x', axis_xOffest[idx])
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'text-before-edge')
+            .attr('font-size', 36)
+            .attr('font-weight', 700)
+            .attr('fill', Theme[__sKeyList[idx] + 'BorderColor'])
+            .classed('linkText', true)
+            .attr('pointer-events', 'none')
       })
       .on('mouseout', (d) => {
         LinkCanvasLayer.selectAll(".linkText").remove();
